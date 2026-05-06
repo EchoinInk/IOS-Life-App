@@ -65,7 +65,7 @@ const Header = ({
           </button>
 
           <div className="flex-1 min-w-0">
-            <HeroTitle tone="default">{greeting}</HeroTitle>
+            <HeroTitle tone="primary">{greeting}</HeroTitle>
             <Meta>{topBarSubtitle}</Meta>
           </div>
 
