@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { shallow } from "zustand/shallow";
 import { useTasksStore } from "../store/useTasksStore";
 import {
   selectTasksByDate,
@@ -24,7 +25,7 @@ import { getToday } from "@/shared/lib/date";
  */
 export const useTaskData = () => {
   // Use shallow selector to prevent unnecessary re-renders
-  const tasks = useTasksStore((s) => s.tasks);
+  const tasks = useTasksStore((s) => s.tasks, shallow);
   const today = getToday();
 
   // Core data
@@ -79,7 +80,7 @@ export const useTaskData = () => {
  * @returns Task data for the specified date
  */
 export const useTaskDataByDate = (date: string) => {
-  const tasks = useTasksStore((s) => s.tasks);
+  const tasks = useTasksStore((s) => s.tasks, shallow);
 
   const tasksByDate = useMemo(() => selectTasksByDate(tasks, date), [tasks, date]);
   const completedTasksByDate = useMemo(

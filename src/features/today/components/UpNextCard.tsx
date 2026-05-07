@@ -1,7 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import { Body, Meta } from "@/components/ui/Text";
 import { Card } from "@/components/ui/Card";
-import { getCategoryMetadata } from "@/features/tasks/api";
+import { getCategoryMetadata } from "@/features/tasks/domain/taskDomain";
 import { getColorClasses } from "@/shared/lib/colorMapper";
 import type { Task } from "@/features/tasks/types/types";
 

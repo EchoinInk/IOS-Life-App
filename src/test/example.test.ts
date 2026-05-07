@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { getBudgetSummary } from "@/features/budget/hooks/useBudget";
 import { buildRecipeWorkflow } from "@/features/recipes/services/recipeWorkflow";
-import { isTaskCompleted } from "@/features/tasks/api";
+import { isTaskCompleted } from "@/features/tasks/domain/taskDomain";
 import { formatDisplayDate } from "@/shared/lib/date";
 import type { Task } from "@/features/tasks/types/types";
 

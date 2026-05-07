@@ -13,7 +13,7 @@ import { memo, useCallback } from "react";
 import { ChevronRight, Clock, Play } from "lucide-react";
 import { Surface } from "@/components/ui/Surface";
 import { Text } from "@/components/ui/Text";
-import { getCategoryMetadata } from "@/features/tasks/api";
+import { getCategoryMetadata } from "@/features/tasks/domain/taskDomain";
 import { getColorClasses } from "@/shared/lib/colorMapper";
 import type { Task } from "@/features/tasks/types/types";
 
@@ -44,7 +44,7 @@ const UrgencyBadge = ({ time }: { time?: string }) => {
   if (!time) return null;
 
   const timeStr: string = time;
-  const hour = parseInt(timeStr.split(":")[0], 10);
+  const hour = parseInt(timeStr.split(":")[0] || "0", 10);
   const isUrgent = hour < 12; // Morning tasks
   const isSoon = hour >= 12 && hour < 17; // Afternoon tasks
 
@@ -73,7 +73,7 @@ export const UpNextPriority = memo(({ task, onPress }: UpNextPriorityProps) => {
     return <EmptyState />;
   }
 
-  const meta = getCategoryMetadata(task.category || undefined);
+  const meta = getCategoryMetadata(task.category);
   const classes = getColorClasses(meta.bg);
 
   return (

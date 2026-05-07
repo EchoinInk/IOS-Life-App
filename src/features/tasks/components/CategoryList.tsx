@@ -1,4 +1,4 @@
-import { getCategoryMetadata } from "@/features/tasks/api";
+import { getCategoryMetadata } from "@/features/tasks/domain/taskDomain";
 import { getColorClasses } from "@/shared/lib/colorMapper";
 
 interface CategorySummary {
