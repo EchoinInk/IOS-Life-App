@@ -10,21 +10,23 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
 }
 
+const baseClass = "inline-flex items-center justify-center gap-2 font-semibold rounded-lg transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40";
+
 const variantClass: Record<ButtonVariant, string> = {
   primary:
-    "bg-gradient-primary text-text-on-primary shadow-button hover:shadow-elevated hover:brightness-105 active:scale-[0.98] transition-all duration-200",
+    "bg-primary text-text-on-primary shadow-sm hover:brightness-105 active:scale-[0.98] active:brightness-95",
   secondary:
-    "bg-surface border border-border-default text-text-primary hover:bg-surface-elevated hover:border-secondary active:scale-[0.98] transition-all duration-200",
+    "bg-surface border border-border text-text-primary hover:bg-surface-elevated hover:border-border active:scale-[0.98] active:bg-surface",
   ghost:
-    "bg-transparent text-text-secondary hover:bg-surface-elevated hover:text-text-primary active:scale-[0.98] transition-all duration-200",
+    "bg-transparent text-text-secondary hover:bg-surface-elevated hover:text-text-primary active:scale-[0.98]",
   danger:
-    "bg-error text-text-on-primary shadow-button hover:shadow-elevated hover:brightness-105 active:scale-[0.98] transition-all duration-200",
+    "bg-error text-text-on-primary shadow-sm hover:brightness-105 active:scale-[0.98] active:brightness-95",
 };
 
 const sizeClass: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm",
-  md: "h-11 px-4 text-sm",
-  lg: "h-12 px-6 text-base",
+  sm: "h-8 px-3 text-xs",
+  md: "h-10 px-4 text-sm",
+  lg: "h-11 px-5 text-sm",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -34,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type={type}
         className={clsx(
-          "inline-flex items-center justify-center gap-2 rounded-xl font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-50",
+          baseClass,
           variantClass[variant],
           sizeClass[size],
           fullWidth && "w-full",

@@ -90,18 +90,18 @@ const Header = ({
 
       {/* TITLE OR DATE PILL */}
       {showDatePill && selectedDate && onDateChange ? (
-        <div className="flex items-center gap-2 px-4 rounded-full bg-muted opacity-90 backdrop-blur-md shadow-soft">
+        <div className="flex items-center gap-2 px-4 rounded-full bg-surface-elevated border border-border shadow-sm">
           <button
             type="button"
             aria-label="Show previous day"
             onClick={() => shift(-1)}
-            className={`p-3 text-muted active:scale-95 transition ${focusRing}`}
+            className={`p-2.5 text-text-secondary hover:text-text-primary hover:bg-hover-overlay rounded-lg transition-all ${focusRing}`}
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} />
           </button>
 
           <div className="flex-1 text-center">
-            <LabelSoft className="font-bold">
+            <LabelSoft className="font-bold text-text-primary">
               {formatDate(selectedDate)}
             </LabelSoft>
           </div>
@@ -110,28 +110,28 @@ const Header = ({
             type="button"
             aria-label="Show next day"
             onClick={() => shift(1)}
-            className={`p-3 text-muted active:scale-95 transition ${focusRing}`}
+            className={`p-2.5 text-text-secondary hover:text-text-primary hover:bg-hover-overlay rounded-lg transition-all ${focusRing}`}
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </button>
         </div>
       ) : title ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="relative flex items-center justify-center">
             {onBack && (
               <button
                 onClick={onBack}
-                className={`absolute left-0 p-3 hover:bg-muted hover:opacity-40 active:scale-[0.98] transition-all ${focusRing}`}
+                className={`absolute left-0 p-2.5 hover:bg-surface-elevated rounded-lg active:scale-[0.98] transition-all ${focusRing}`}
                 aria-label="Go back"
               >
                 ←
               </button>
             )}
-            <Metric className="text-2xl">{title}</Metric>
+            <Metric className="text-xl">{title}</Metric>
           </div>
 
           {subtitle && (
-            <div className="rounded-full px-4 py-2 text-center backdrop-blur-xl bg-gradient-soft shadow-card">
+            <div className="rounded-full px-4 py-1.5 text-center bg-surface-elevated border border-border shadow-sm">
               <Meta>{subtitle}</Meta>
             </div>
           )}

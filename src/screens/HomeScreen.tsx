@@ -52,23 +52,24 @@ const HomeScreen = () => {
     <>
       {/* PAGE WRAPPER */}
       <div className="relative min-h-screen bg-background overflow-hidden">
-        {/* Background glow */}
+        {/* Subtle background accent */}
         <div className="pointer-events-none absolute inset-0">
           <div
             className="
               absolute
-              top-[-40px]
+              top-[-60px]
               left-1/2 -translate-x-1/2
-              w-[320px] h-[320px]
-              blur-2xl
-              opacity-15
+              w-[280px] h-[280px]
+              opacity-8
               bg-gradient-primary
+              rounded-full
+              blur-3xl
             "
           />
         </div>
 
         {/* CONTENT */}
-        <div className="relative z-10 w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(96px+env(safe-area-inset-bottom))] space-y-4">
+        <div className="relative z-10 w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] space-y-3">
           {/* HEADER */}
           <HomeHeader greeting={greeting} />
 

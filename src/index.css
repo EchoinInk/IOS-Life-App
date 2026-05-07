@@ -7,55 +7,73 @@
 
 @layer base {
   :root {
-    /* SURFACE */
-    --bg: #F1F5F9;
+    /* SURFACE - Light Mode */
+    --bg: #F8FAFC;
     --surface: #FFFFFF;
-    --surface-elevated: #F2F4FA;
-    --surface-glass: rgba(255, 255, 255, 0.6);
+    --surface-elevated: #F1F5F9;
+    --surface-subtle: #F8FAFC;
+    --surface-inset: #E2E8F0;
 
-    /* TEXT */
+    /* TEXT - Light Mode */
     --text-primary: #0F172A;
-    --text-secondary: #647488;
-    --text-muted: #94A3BB;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --text-placeholder: #CBD5E1;
     --text-on-primary: #FFFFFF;
+    --text-on-dark: #0F172A;
 
-    /* BORDER */
-    --border: #E5E7E8;
+    /* BORDER - Light Mode */
+    --border: #E2E8F0;
+    --border-subtle: #F1F5F9;
 
     /* SEMANTIC */
-    --primary: #28D9FF;
+    --primary: #0EA5E9;
     --secondary: #4F46E5;
-    --accent: #8B5CF6;
+    --accent: #7C3AED;
     --success: #22C55E;
     --error: #EF4444;
     --warning: #F59E0B;
     --info: #0EA5E9;
+
+    /* INTERACTION */
+    --focus-ring: rgba(79, 70, 229, 0.2);
+    --hover-overlay: rgba(15, 23, 42, 0.04);
+    --pressed-overlay: rgba(15, 23, 42, 0.08);
   }
 
   .dark {
-    /* SURFACE */
-    --bg: #0F1220;
-    --surface: #161A2E;
-    --surface-elevated: #1D233D;
-    --surface-glass: rgba(22, 26, 46, 0.7);
+    /* SURFACE - Dark Mode */
+    --bg: #0A0F1E;
+    --surface: #111827;
+    --surface-elevated: #1E293B;
+    --surface-subtle: #0F172A;
+    --surface-inset: #020617;
 
-    /* TEXT */
+    /* TEXT - Dark Mode */
     --text-primary: #F8FAFC;
-    --text-secondary: #94A3BB;
-    --text-muted: #647488;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --text-placeholder: #475569;
     --text-on-primary: #0F172A;
+    --text-on-dark: #FFFFFF;
 
-    /* BORDER */
-    --border: #2A314D;
+    /* BORDER - Dark Mode */
+    --border: #1E293B;
+    --border-subtle: #0F172A;
 
     /* SEMANTIC */
-    --primary: #28D9FF;
+    --primary: #0EA5E9;
     --secondary: #4F46E5;
-    --accent: #8B5CF6;
+    --accent: #7C3AED;
     --success: #22C55E;
     --error: #EF4444;
     --warning: #F59E0B;
     --info: #0EA5E9;
+
+    /* INTERACTION */
+    --focus-ring: rgba(79, 70, 229, 0.3);
+    --hover-overlay: rgba(255, 255, 255, 0.04);
+    --pressed-overlay: rgba(255, 255, 255, 0.08);
   }
 
   /* ---------------- BASE STYLES ---------------- */
@@ -78,22 +96,87 @@
 /* ---------------- COMPONENT UTILITIES ---------------- */
 
 @layer components {
+  /* Surface Primitives */
+  .surface-base {
+    @apply bg-surface border border-border rounded-lg shadow-sm;
+  }
+
+  .surface-elevated {
+    @apply bg-surface-elevated border border-border rounded-lg shadow-md;
+  }
+
+  .surface-subtle {
+    @apply bg-surface-subtle border border-border-subtle rounded-lg;
+  }
+
+  .surface-inset {
+    @apply bg-surface-inset rounded-lg shadow-inner;
+  }
+
+  /* Card Primitives */
   .card-base {
-    @apply bg-surface rounded-xl p-4 shadow-card;
+    @apply bg-surface rounded-lg p-3 shadow-sm;
   }
 
   .card-elevated {
-    @apply bg-surface-elevated rounded-xl p-4 shadow-elevated;
+    @apply bg-surface-elevated rounded-lg p-3 shadow-md;
   }
 
+  /* Interaction States */
+  .state-hover {
+    @apply transition-all duration-150 ease-out hover:bg-surface-elevated;
+  }
 
+  .state-active {
+    @apply active:scale-[0.98] active:opacity-90;
+  }
+
+  .state-pressed {
+    @apply scale-95 opacity-80;
+  }
+
+  .state-disabled {
+    @apply opacity-40 pointer-events-none cursor-not-allowed;
+  }
+
+  /* Focus States */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2;
+  }
+
+  .focus-ring-subtle {
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/20;
+  }
+
+  /* Modal Overlay - reduced blur */
   .modal {
-    @apply fixed inset-0 z-50 flex items-end justify-center bg-black/20 backdrop-blur-md p-4;
+    @apply fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4;
   }
 
-  .surface-glass {
-    @apply rounded-xl backdrop-blur-xl border border-border-default;
-    background: var(--surface-glass);
+  /* Typography Primitives */
+  .text-display {
+    @apply text-2xl font-bold tracking-tight text-text-primary;
+    line-height: 1.2;
+  }
+
+  .text-title {
+    @apply text-lg font-semibold tracking-tight text-text-primary;
+    line-height: 1.4;
+  }
+
+  .text-body {
+    @apply text-sm font-normal text-text-primary;
+    line-height: 1.5;
+  }
+
+  .text-label {
+    @apply text-xs font-medium text-text-secondary;
+    line-height: 1.33;
+  }
+
+  .text-caption {
+    @apply text-[11px] font-normal text-text-muted;
+    line-height: 1.45;
   }
 }
 

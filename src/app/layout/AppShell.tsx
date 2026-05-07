@@ -21,9 +21,9 @@ const AppShell = ({ children }: AppShellProps) => (
         className="
           w-full max-w-[430px]
           pointer-events-auto
-          bg-background/95 backdrop-blur-xl
-          border-t border-default
-          shadow-elevated
+          bg-background
+          border-t border-border
+          shadow-lg
           pb-[env(safe-area-inset-bottom)]
         "
       >

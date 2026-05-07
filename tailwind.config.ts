@@ -71,10 +71,13 @@ export default {
       },
 
       boxShadow: {
-        card: tokens.shadows.card,
-        elevated: tokens.shadows.elevated,
-        button: tokens.shadows.button,
+        xs: tokens.shadows.xs,
+        sm: tokens.shadows.sm,
+        md: tokens.shadows.md,
+        lg: tokens.shadows.lg,
+        xl: tokens.shadows.xl,
         focus: tokens.shadows.focus,
+        "focus-visible": tokens.shadows.focusVisible,
       },
 
       borderRadius: {
@@ -83,6 +86,18 @@ export default {
         lg: tokens.radius.lg,
         xl: tokens.radius.xl,
         "2xl": tokens.radius["2xl"],
+      },
+
+      spacing: {
+        "0.5": tokens.spacing[0.5],
+        "1.5": tokens.spacing[1.5],
+        "2.5": tokens.spacing[2.5],
+        "3.5": tokens.spacing[3.5],
+      },
+
+      transitionDuration: {
+        "50": "50ms",
+        "150": "150ms",
       },
 
       keyframes: {
