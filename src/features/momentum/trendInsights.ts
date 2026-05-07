@@ -324,7 +324,13 @@ export class TrendInsightsGenerator {
 
     let streakLength = 0;
     for (let i = 0; i < Math.min(scores.length - 1, 6); i++) {
-      if (scores[i] && scores[i + 1] && scores[i].totalScore > scores[i + 1].totalScore) {
+      const currentScore = scores[i];
+      const nextScore = scores[i + 1];
+      
+      if (currentScore && nextScore && 
+          currentScore.totalScore !== undefined && 
+          nextScore.totalScore !== undefined && 
+          currentScore.totalScore > nextScore.totalScore) {
         streakLength++;
       } else {
         break;
