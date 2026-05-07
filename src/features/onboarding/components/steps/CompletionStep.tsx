@@ -9,9 +9,13 @@ import { FOCUS_AREA_LABELS, GOAL_LABELS, MODULE_LABELS, CADENCE_LABELS, PLANNING
 import { Heading, Body, Accent } from '@/components/ui/Text';
 import { Surface } from '@/components/ui/Surface';
 import { useOnboardingAnalytics } from '@/analytics/analyticsHooks';
+import { useSeededExperienceIntegration } from '../../utils/seededExperienceIntegration';
+import { useOnboardingActions } from '../../store/useOnboardingStore';
 
 export const CompletionStep = ({ data, onNext }: OnboardingStepProps) => {
   const { stepViewed, completed } = useOnboardingAnalytics();
+  const { integrateSeededExperience } = useSeededExperienceIntegration();
+  const { completeOnboarding } = useOnboardingActions();
   
   const userName = data.userName || 'there';
   const focusAreas = data.primaryFocusAreas || [];
@@ -25,7 +29,7 @@ export const CompletionStep = ({ data, onNext }: OnboardingStepProps) => {
     stepViewed('completion', 4, 5);
   }, [stepViewed]);
 
-  const handleGetStarted = (e: React.FormEvent) => {
+  const handleGetStarted = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Track onboarding completion
@@ -36,6 +40,12 @@ export const CompletionStep = ({ data, onNext }: OnboardingStepProps) => {
       planningStyle,
       modules.length
     );
+    
+    // Complete onboarding
+    completeOnboarding();
+    
+    // Integrate seeded experience
+    await integrateSeededExperience(data);
     
     onNext();
   };

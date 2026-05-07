@@ -8,6 +8,7 @@ import { Surface } from './Surface';
 import { Body, Caption, Title } from './Text';
 import { Button } from './Button';
 import { MomentumRing } from '@/features/momentum/components/MomentumRing';
+import type { OnboardingData } from '@/features/onboarding/types/onboarding.types';
 
 interface IntelligentEmptyStateProps {
   // Context
@@ -16,6 +17,9 @@ interface IntelligentEmptyStateProps {
   // User state awareness
   isFirstTime?: boolean;
   _hasOnboarded?: boolean;
+  
+  // Onboarding context for personalization
+  onboardingData?: Partial<OnboardingData>;
   
   // Customization
   className?: string;
@@ -29,24 +33,62 @@ interface IntelligentEmptyStateProps {
 export const IntelligentEmptyState: React.FC<IntelligentEmptyStateProps> = ({
   context,
   isFirstTime = false,
-  _hasOnboarded = true,
+  onboardingData,
   className = '',
   action,
   showMomentum = false,
   momentumScore = 0
 }) => {
   const getContent = () => {
+    const focusAreas = onboardingData?.primaryFocusAreas || [];
+    const primaryFocus = focusAreas[0];
+    
     switch (context) {
-      case 'tasks':
+      case 'tasks': {
+        // Personalize based on primary focus area
+        const taskSuggestions: Record<string, { title: string; description: string; suggestion: string }> = {
+          work: {
+            title: isFirstTime ? 'Plan your first focus session' : 'Ready for today\'s work priorities',
+            description: isFirstTime 
+              ? 'Start building momentum with your first work task. Small steps create big progress.'
+              : 'Add your most important work task to maintain your daily momentum streak.',
+            suggestion: isFirstTime ? 'Try: "Review today\'s priorities"' : 'Try: "Block focus time for deep work"'
+          },
+          health: {
+            title: isFirstTime ? 'Start your wellness journey' : 'Keep up your health momentum',
+            description: isFirstTime
+              ? 'Your first health task is a step toward better wellness. Start small.'
+              : 'Add health-related tasks to maintain your wellness momentum.',
+            suggestion: isFirstTime ? 'Try: "Schedule movement for today"' : 'Try: "Log your water intake"'
+          },
+          budgeting: {
+            title: isFirstTime ? 'Track your first expense' : 'Maintain financial clarity',
+            description: isFirstTime
+              ? 'Start building awareness of your spending patterns. Every transaction counts.'
+              : 'Continue tracking expenses to maintain your financial momentum.',
+            suggestion: isFirstTime ? 'Try: "Log morning coffee"' : 'Try: "Review daily spending"'
+          },
+          routines: {
+            title: isFirstTime ? 'Build your first routine' : 'Strengthen your daily flow',
+            description: isFirstTime
+              ? 'Routines create automatic progress. Start with a simple morning ritual.'
+              : 'Consistent routines are the foundation of sustained momentum.',
+            suggestion: isFirstTime ? 'Try: "Morning review"' : 'Try: "Evening planning"'
+          },
+        };
+
+        const personalizedContent = primaryFocus ? taskSuggestions[primaryFocus] : taskSuggestions.work;
+        
         return {
           icon: '🎯',
-          title: isFirstTime ? 'Plan your first focus session' : 'Ready for today\'s priorities',
-          description: isFirstTime 
+          title: personalizedContent?.title || (isFirstTime ? 'Plan your first focus session' : 'Ready for today\'s priorities'),
+          description: personalizedContent?.description || (isFirstTime 
             ? 'Start building momentum with your first task. Small steps create big progress.'
-            : 'Add your most important task to maintain your daily momentum streak.',
-          suggestion: isFirstTime ? 'Try: "Complete project proposal draft"' : 'Try: "Review morning emails"',
+            : 'Add your most important task to maintain your daily momentum streak.'),
+          suggestion: personalizedContent?.suggestion || (isFirstTime ? 'Try: "Complete project proposal draft"' : 'Try: "Review morning emails"'),
           ctaText: isFirstTime ? 'Add First Task' : 'Add Today\'s Priority'
         };
+      }
         
       case 'meals':
         return {
