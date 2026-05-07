@@ -10,6 +10,12 @@ export interface InsightData {
   shoppingTotal: number;
   streakTasks: number;
   streakMeals: number;
+  // Routine integration
+  routinesCompleted: number;
+  routinesTotal: number;
+  routineStreak: number;
+  morningRoutineCompleted: boolean;
+  eveningRoutineCompleted: boolean;
 }
 
 export interface Insight {
@@ -139,6 +145,63 @@ export const generateInsights = (data: InsightData): Insight[] => {
       id: "high-productivity",
       type: "achievement",
       message: "You're highly productive today! Keep up the great work",
+      priority: "medium",
+    });
+  }
+
+  // Routine insights
+  if (data.routinesTotal > 0 && data.routinesCompleted === data.routinesTotal) {
+    insights.push({
+      id: "all-routines-complete",
+      type: "achievement",
+      message: "All routines completed today! Great consistency 🌟",
+      priority: "high",
+    });
+  }
+
+  if (data.routineStreak >= 7) {
+    insights.push({
+      id: "routine-streak-week",
+      type: "achievement",
+      message: `${data.routineStreak} day routine streak! Amazing consistency 🔥`,
+      priority: "high",
+    });
+  } else if (data.routineStreak >= 3) {
+    insights.push({
+      id: "routine-streak-good",
+      type: "achievement",
+      message: `${data.routineStreak} day routine streak - Keep it going!`,
+      priority: "medium",
+    });
+  }
+
+  if (!data.morningRoutineCompleted && data.routinesTotal > 0) {
+    insights.push({
+      id: "morning-routine-missing",
+      type: "tip",
+      message: "Morning routine not started yet. Start your day with intention",
+      priority: "low",
+    });
+  }
+
+  if (!data.eveningRoutineCompleted && data.routinesTotal > 0) {
+    const hour = new Date().getHours();
+    if (hour >= 17) {
+      insights.push({
+        id: "evening-routine-missing",
+        type: "tip",
+        message: "Evening review pending. Reflect on your day",
+        priority: "low",
+      });
+    }
+  }
+
+  const routineCompletionRate = data.routinesTotal > 0 ? data.routinesCompleted / data.routinesTotal : 0;
+  if (routineCompletionRate >= 0.8 && routineCompletionRate < 1) {
+    insights.push({
+      id: "routines-progress",
+      type: "encouragement",
+      message: `Great routine progress! ${data.routinesTotal - data.routinesCompleted} to go`,
       priority: "medium",
     });
   }

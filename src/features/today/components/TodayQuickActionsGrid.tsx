@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import taskillustration from "@/assets/tasksquickactions.webp";
 import mealillustration from "@/assets/mealquickactions.webp";
 import budgetillustration from "@/assets/budgetquickactions.webp";
+import routineillustration from "@/assets/3d-clipboard.webp";
 
 interface CardProps {
   title: string;
@@ -20,9 +21,12 @@ interface Props {
   tasks: number;
   meals: number;
   remaining: number;
+  routinesCompleted: number;
+  routinesTotal: number;
   onAddTask?: () => void;
   onAddMeal?: () => void;
   onAddExpense?: () => void;
+  onStartRoutine?: () => void;
 }
 
 const SummaryCard = ({
@@ -72,10 +76,15 @@ const TodayQuickActionsGrid = ({
   tasks,
   meals,
   remaining,
+  routinesCompleted,
+  routinesTotal,
   onAddTask,
   onAddMeal,
   onAddExpense,
+  onStartRoutine,
 }: Props) => {
+  const routinePercentage = routinesTotal > 0 ? Math.round((routinesCompleted / routinesTotal) * 100) : 0;
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <SummaryCard
@@ -139,6 +148,27 @@ const TodayQuickActionsGrid = ({
           />
         }
         onClick={onAddExpense || (() => {})}
+      />
+
+      <SummaryCard
+        title="Routines"
+        value={routinePercentage}
+        subtitle="Complete"
+        ariaLabel={`Routines: ${routinePercentage}% complete`}
+        icon={
+          <img
+            src={routineillustration}
+            srcSet={`${routineillustration} 1x`}
+            sizes="(max-width: 768px) 48px, 48px"
+            alt=""
+            width={48}
+            height={48}
+            loading="lazy"
+            decoding="async"
+            className="object-contain"
+          />
+        }
+        onClick={onStartRoutine || (() => {})}
       />
     </div>
   );

@@ -9,9 +9,11 @@ import { Body, Caption } from '@/components/ui/Text';
 import { MomentumRing } from '@/features/momentum/components/MomentumRing';
 import { StreakDisplay } from '@/features/momentum/components/StreakDisplay';
 import { useMomentumToday } from '@/features/momentum/hooks/useMomentumToday';
+import { useRoutineMomentumSummary } from '@/features/routines/integration/routineMomentumHook';
 
 export const MomentumTodayCard: React.FC = () => {
   const { todayScore, momentumLevel, longestStreak, weeklyTrend, insights } = useMomentumToday();
+  const routineSummary = useRoutineMomentumSummary();
 
   const getMomentumMessage = (level: string, score: number): string => {
     if (score === 0) return 'Start building your momentum today';
@@ -103,6 +105,28 @@ export const MomentumTodayCard: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Routine progress */}
+        {routineSummary.totalRoutines > 0 && (
+          <div className="border-t border-border pt-3">
+            <Caption className="text-text-muted mb-2">
+              Routine Progress
+            </Caption>
+            <div className="flex items-center justify-between">
+              <Caption className="text-text-secondary">
+                {routineSummary.completedRoutines}/{routineSummary.totalRoutines} completed
+              </Caption>
+              <Caption className="text-text-primary font-medium">
+                {routineSummary.completionRate}%
+              </Caption>
+            </div>
+            {routineSummary.longestStreak > 0 && (
+              <Caption className="text-text-muted mt-1">
+                Best streak: {routineSummary.longestStreak} days
+              </Caption>
+            )}
           </div>
         )}
       </div>

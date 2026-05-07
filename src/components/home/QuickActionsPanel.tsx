@@ -6,9 +6,12 @@ export interface QuickActionsPanelProps {
   tasks: number;
   meals: number;
   remaining: number;
+  routinesCompleted: number;
+  routinesTotal: number;
   onAddTask: () => void;
   onAddMeal: () => void;
   onAddExpense: () => void;
+  onStartRoutine: () => void;
 }
 
 /**
@@ -26,9 +29,12 @@ export const QuickActionsPanel = memo(({
   tasks, 
   meals, 
   remaining, 
+  routinesCompleted,
+  routinesTotal,
   onAddTask, 
   onAddMeal, 
-  onAddExpense 
+  onAddExpense,
+  onStartRoutine
 }: QuickActionsPanelProps) => {
   // Memoize callbacks to prevent TodayQuickActionsGrid from re-rendering
   const handleAddTask = useCallback(() => {
@@ -43,15 +49,22 @@ export const QuickActionsPanel = memo(({
     onAddExpense();
   }, [onAddExpense]);
 
+  const handleStartRoutine = useCallback(() => {
+    onStartRoutine();
+  }, [onStartRoutine]);
+
   return (
     <div className={TAILWIND_ANIMATIONS.fadeIn}>
       <TodayQuickActionsGrid
         tasks={tasks}
         meals={meals}
         remaining={remaining}
+        routinesCompleted={routinesCompleted}
+        routinesTotal={routinesTotal}
         onAddTask={handleAddTask}
         onAddMeal={handleAddMeal}
         onAddExpense={handleAddExpense}
+        onStartRoutine={handleStartRoutine}
       />
     </div>
   );

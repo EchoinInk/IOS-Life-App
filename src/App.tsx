@@ -6,6 +6,7 @@ import { StoreProvider } from "@/app/providers/StoreProvider";
 import LoadingState from "@/components/ui/LoadingState";
 import HomeScreen from "@/screens/HomeScreen"; // Eager load for LCP optimization
 import { useNotifications } from "@/shared/hooks/useNotifications";
+import { useRoutineMomentumSync } from "@/features/routines/integration/routineMomentumHook";
 
 // Lazy load other screens for code splitting
 const TasksPage = lazy(() => import("@/features/tasks/pages/TasksPage"));
@@ -18,6 +19,9 @@ const OnboardingScreen = lazy(() => import("@/features/onboarding/OnboardingScre
 const AppContent = () => {
   // Initialize notifications hook for daily reminders
   useNotifications();
+  
+  // Sync routine data with momentum system
+  useRoutineMomentumSync();
 
   return (
     <BrowserRouter>

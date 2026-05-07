@@ -10,9 +10,13 @@ import {
   getPersonalizedDashboardLayout, 
   getPersonalizedWelcomeMessage 
 } from '@/features/onboarding/utils/personalization.utils';
+import { useRoutineData } from '@/features/routines/hooks/useRoutineData';
+import { selectMorningEveningStatus } from '@/features/routines/selectors/routineSelectors';
+import type { RoutineInstance } from '@/features/routines/types/routineTypes';
 
 export const usePersonalizedHome = () => {
   const onboardingData = useOnboardingData();
+  const routineData = useRoutineData();
 
   // Generate personalized defaults
   const personalizedDefaults = useMemo(() => {
@@ -63,6 +67,27 @@ export const usePersonalizedHome = () => {
     return onboardingData.userName || 'there';
   }, [onboardingData.userName]);
 
+  // Routine integration
+  const routineStatus = useMemo(() => {
+    // Convert array to record for selector
+    const routineRecord = routineData.todayRoutines.reduce((acc, routine) => {
+      acc[routine.id] = routine;
+      return acc;
+    }, {} as Record<string, RoutineInstance>);
+    return selectMorningEveningStatus(routineRecord);
+  }, [routineData.todayRoutines]);
+
+  const routineProgress = useMemo(() => {
+    const total = routineData.todayRoutines.length;
+    const completed = routineData.todayRoutines.filter(r => r.status === 'completed').length;
+    return {
+      morningCompleted: routineStatus.morning.completed,
+      eveningCompleted: routineStatus.evening.completed,
+      routinePercentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+      activeRoutine: routineData.activeFocusSession?.id || null
+    };
+  }, [routineData.todayRoutines, routineData.activeFocusSession, routineStatus]);
+
   return {
     // Personalized content
     personalizedDefaults,
@@ -81,6 +106,10 @@ export const usePersonalizedHome = () => {
     // User state
     isNewUser,
     hasOnboardingData: !!onboardingData.completedAt,
+    
+    // Routine data
+    routineProgress,
+    routineStatus,
     
     // Helper booleans
     isWorkFocused: focusAreas.includes('work'),

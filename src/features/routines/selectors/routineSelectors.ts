@@ -240,6 +240,68 @@ export const selectCompletionTrends = (
 };
 
 /**
+ * Select morning/evening routine status for home dashboard
+ */
+export const selectMorningEveningStatus = (
+  instances: Record<string, RoutineInstance>
+): {
+  morning: { completed: boolean; inProgress: boolean; pending: boolean };
+  evening: { completed: boolean; inProgress: boolean; pending: boolean };
+} => {
+  const today = getTodayString();
+  const todayInstances = Object.values(instances).filter(i => i.date === today);
+
+  const morning = todayInstances.find(i => i.type === 'morning');
+  const evening = todayInstances.find(i => i.type === 'evening');
+
+  return {
+    morning: {
+      completed: morning?.status === 'completed',
+      inProgress: morning?.status === 'in_progress',
+      pending: !morning || morning?.status === 'pending'
+    },
+    evening: {
+      completed: evening?.status === 'completed',
+      inProgress: evening?.status === 'in_progress',
+      pending: !evening || evening?.status === 'pending'
+    }
+  };
+};
+
+/**
+ * Select routine summary for momentum integration
+ */
+export const selectRoutineMomentumData = (
+  instances: Record<string, RoutineInstance>,
+  sessions: Record<string, FocusSession>
+): {
+  completedCount: number;
+  totalCount: number;
+  momentumSum: number;
+  activeRoutine: RoutineInstance | null;
+} => {
+  const today = getTodayString();
+  const todayInstances = Object.values(instances).filter(i => i.date === today);
+  const todaySessions = Object.values(sessions).filter(s => {
+    const sessionDate = s.actualStart?.split('T')[0] || s.scheduledStart.split('T')[0];
+    return sessionDate === today;
+  });
+
+  const completedCount = todayInstances.filter(i => i.status === 'completed').length;
+  const totalCount = todayInstances.length;
+  const momentumSum = todayInstances.reduce((sum, i) => sum + i.momentum, 0) +
+                      todaySessions.reduce((sum, s) => sum + s.momentum, 0);
+  const activeRoutine = todayInstances.find(i => i.status === 'in_progress') || null;
+
+  return {
+    completedCount,
+    totalCount,
+    momentumSum,
+    activeRoutine
+  };
+};
+
+/**
  * Hook for using routine selectors with memoization
  */
 export const useRoutineSelectors = () => {
@@ -258,6 +320,8 @@ export const useRoutineSelectors = () => {
     selectRoutineStats,
     selectRoutineInsights,
     selectUpcomingRoutines,
-    selectCompletionTrends
+    selectCompletionTrends,
+    selectMorningEveningStatus,
+    selectRoutineMomentumData
   };
 };

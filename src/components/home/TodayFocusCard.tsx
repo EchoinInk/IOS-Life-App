@@ -18,6 +18,13 @@ export interface TodayFocusCardProps {
   nextTask: Task | null;
   onAddTask: () => void;
   onCompleteNext: () => void;
+  // Routine integration props
+  routineProgress?: {
+    morningCompleted: boolean;
+    eveningCompleted: boolean;
+    routinePercentage: number;
+    activeRoutine: string | null;
+  };
 }
 
 const formatDate = () =>
@@ -36,6 +43,7 @@ export const TodayFocusCard = memo(
     nextTask,
     onAddTask,
     onCompleteNext,
+    routineProgress,
   }: TodayFocusCardProps) => {
     const isEmpty = total === 0;
     const isDone = !isEmpty && remaining === 0;
@@ -45,6 +53,9 @@ export const TodayFocusCard = memo(
     }, [nextTask, onCompleteNext]);
 
     const meta = nextTask ? getCategoryMetadata(nextTask.category) : null;
+
+    // Routine progress indicators
+    const showRoutineProgress = routineProgress && (routineProgress.morningCompleted || routineProgress.eveningCompleted || routineProgress.activeRoutine);
 
     return (
       <Surface
@@ -61,6 +72,14 @@ export const TodayFocusCard = memo(
             </span>
             <span className="text-[11px] text-text-secondary">·</span>
             <span className="text-[11px] text-text-secondary">{formatDate()}</span>
+            {showRoutineProgress && (
+              <>
+                <span className="text-[11px] text-text-secondary">·</span>
+                <span className="text-[11px] font-medium text-text-primary">
+                  {routineProgress?.routinePercentage}% routines
+                </span>
+              </>
+            )}
           </div>
           <div className="flex items-baseline gap-1 tabular-nums">
             <Text size="sm" weight="bold" tone="primary">
