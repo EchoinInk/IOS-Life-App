@@ -5,7 +5,7 @@ import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import Header from "@/components/layout/Header";
 import AddMeal from "@/features/meals/components/AddMealModal";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { IntelligentEmptyState } from "@/components/ui/IntelligentEmptyState";
 import { Body } from "@/components/ui/Text";
 
 import { weekdays } from "@/features/meals/constants/weekdays";
@@ -30,10 +30,15 @@ const MealPlannerPage = () => {
               <CardHeader title={day} />
               <CardBody>
                 {dayMeals.length === 0 ? (
-                  <EmptyState
-                    title="No meals planned"
-                    description="Add a meal for this day"
+                  <IntelligentEmptyState
+                    context="meals"
+                    isFirstTime={true}
                     className="py-4"
+                    action={
+                      <Button onClick={() => setOpen(true)} variant="primary" size="sm">
+                        Plan First Meal
+                      </Button>
+                    }
                   />
                 ) : (
                   <div className="space-y-2">

@@ -5,7 +5,7 @@ import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import Header from "@/components/layout/Header";
 import AddShoppingItem from "@/features/shopping/components/AddShoppingItemModal";
-import { Heading, Meta } from "@/components/ui/Text";
+import { IntelligentEmptyState } from "@/components/ui/IntelligentEmptyState";
 
 import { ShoppingRow } from "@/features/shopping/components/ShoppingRow";
 import type { ShoppingCategory } from "@/features/shopping/types/types";
@@ -47,19 +47,15 @@ const ShoppingListPage = () => {
 
         <Surface className="m-4">
           {items.length === 0 ? (
-            <div className="text-center py-8 px-4 space-y-2">
-              <Heading className="text-lg font-semibold">
-                No {activeTab.toLowerCase()} items
-              </Heading>
-              <Meta className="text-sm text-muted">
-                Start by adding your first {activeTab.toLowerCase()} item to build your shopping list
-              </Meta>
-              <div className="pt-4">
+            <IntelligentEmptyState
+              context="lists"
+              isFirstTime={true}
+              action={
                 <Button onClick={() => setOpen(true)} aria-label={`Add ${activeTab.toLowerCase()} item`}>
-                  <Plus size={16} /> Add Item
+                  <Plus size={16} /> Create List
                 </Button>
-              </div>
-            </div>
+              }
+            />
           ) : (
             <div className="space-y-1">
               {items.map((item) => (

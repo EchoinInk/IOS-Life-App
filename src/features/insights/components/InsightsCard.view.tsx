@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
+import { IntelligentEmptyState } from "@/components/ui/IntelligentEmptyState";
 import { Lightbulb, TrendingUp, Target, Zap } from "lucide-react";
 
 export interface InsightsCardViewModel {
@@ -46,17 +47,13 @@ export const InsightsCardView = ({ model }: { model: InsightsCardViewModel }) =>
 
   if (insights.length === 0) {
     return (
-      <Card className="p-3.5">
-        <div className="space-y-2.5">
-          <Text className="text-sm font-bold text-text-primary flex items-center gap-2">
-            <Lightbulb size={15} className="text-warning" />
-            Insights
-          </Text>
-          <Text className="text-xs font-medium text-text-secondary leading-relaxed">
-            Start using the app to see personalized insights here
-          </Text>
-        </div>
-      </Card>
+      <IntelligentEmptyState
+        context="insights"
+        isFirstTime={true}
+        showMomentum={true}
+        momentumScore={0}
+        className="p-3.5"
+      />
     );
   }
 

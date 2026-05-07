@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/Card";
 import { HeroTitle, HeroSubtext, HeroSupport } from "@/components/ui/Text";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { IntelligentEmptyState } from "@/components/ui/IntelligentEmptyState";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import clipboardIllustration from "@/assets/3d-clipboard.webp";
 import { CategoryList } from "./CategoryList";
@@ -127,9 +127,9 @@ const TasksHeroCard = ({
             />
           )}
           {categories.length === 0 && (
-            <EmptyState
-              title="No tasks yet 🎉"
-              description="Add your first task to get started"
+            <IntelligentEmptyState
+              context="tasks"
+              isFirstTime={true}
               action={
                 onAddTask && (
                   <button
@@ -142,7 +142,6 @@ const TasksHeroCard = ({
                   </button>
                 )
               }
-              className="py-4"
             />
           )}
         </div>

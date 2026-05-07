@@ -11,7 +11,7 @@ import AddIncome from "@/features/budget/components/AddIncomeModal";
 
 import { useBudgetActions } from "@/features/budget/hooks/useBudgetActions";
 import { useBudgetData } from "@/features/budget/hooks/useBudgetData";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { IntelligentEmptyState } from "@/components/ui/IntelligentEmptyState";
 import { HeroTitle, Metric, Meta, Label, Body } from "@/components/ui/Text";
 
 const BudgetPage = () => {
@@ -69,9 +69,14 @@ const BudgetPage = () => {
         <CardHeader title="Transactions" />
         <CardBody>
           {data.expenses.length === 0 ? (
-            <EmptyState
-              title="No transactions yet"
-              description="Start by adding your first transaction to track your spending"
+            <IntelligentEmptyState
+              context="budget"
+              isFirstTime={true}
+              action={
+                <Button onClick={() => setOpenExpense(true)} variant="primary">
+                  Add Transaction
+                </Button>
+              }
             />
           ) : (
             <div className="space-y-1">
