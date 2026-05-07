@@ -3,11 +3,12 @@
  * Combines daily progress, the next task, and the primary CTA into
  * one dense, high-signal surface.
  */
-import { memo, useCallback } from "react";
-import clsx from "clsx";
-import { ArrowRight, Check, Plus } from "lucide-react";
+import { memo, useEffect } from "react";
+import { ArrowRight, Plus, Check } from 'lucide-react';
+import clsx from 'clsx';
 import { Surface } from "@/components/ui/Surface";
 import { Text } from "@/components/ui/Text";
+import { useDashboardAnalytics, useTaskAnalytics } from '@/analytics/analyticsHooks';
 import { getCategoryMetadata } from "@/features/tasks/domain/taskDomain";
 import type { Task } from "@/features/tasks/types/types";
 
@@ -46,12 +47,37 @@ export const TodayFocusCard = memo(
     onCompleteNext,
     routineProgress,
   }: TodayFocusCardProps) => {
+    const { viewed: dashboardViewed, quickActionUsed: dashboardQuickActionUsed } = useDashboardAnalytics();
+    const { completed: taskCompleted } = useTaskAnalytics();
+
+    // Track dashboard view
+    useEffect(() => {
+      dashboardViewed('home', remaining, completed, percentage);
+    }, [dashboardViewed, remaining, completed, percentage]);
+
     const isEmpty = total === 0;
     const isDone = !isEmpty && remaining === 0;
 
-    const handleComplete = useCallback(() => {
-      if (nextTask) onCompleteNext();
-    }, [nextTask, onCompleteNext]);
+    const handleAddTask = () => {
+      dashboardQuickActionUsed('add_task', 'home');
+      onAddTask();
+    };
+
+    const handleCompleteNext = () => {
+      if (nextTask) {
+        const priority: 'high' | 'medium' | 'low' = 
+          (nextTask.priority === 'high' || nextTask.priority === 'medium' || nextTask.priority === 'low')
+            ? nextTask.priority
+            : 'medium';
+        taskCompleted(
+          nextTask.id,
+          nextTask.category || 'uncategorized',
+          priority,
+          true
+        );
+      }
+      onCompleteNext();
+    };
 
     const meta = nextTask ? getCategoryMetadata(nextTask.category) : null;
 
@@ -115,7 +141,7 @@ export const TodayFocusCard = memo(
           {isEmpty ? (
             <button
               type="button"
-              onClick={onAddTask}
+              onClick={handleAddTask}
               className="group w-full flex items-center justify-between rounded-lg bg-surface-elevated hover:bg-surface-hover border border-border/50 hover:border-border px-3 py-2.5 transition-[background-color,border-color,transform,box-shadow] duration-200 active:scale-[0.99] active:bg-surface-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 shadow-sm"
             >
               <div className="flex items-center gap-3">
@@ -161,7 +187,7 @@ export const TodayFocusCard = memo(
               {/* Complete checkbox — large primary affordance */}
               <button
                 type="button"
-                onClick={handleComplete}
+                onClick={handleCompleteNext}
                 aria-label={`Complete ${nextTask.label}`}
                 className="shrink-0 w-10 h-10 rounded-lg border-2 border-border/60 bg-surface-elevated hover:bg-primary/10 hover:border-primary/50 hover:text-primary text-text-secondary transition-[background-color,border-color,color,transform] duration-200 flex items-center justify-center active:scale-95 active:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 shadow-sm"
               >

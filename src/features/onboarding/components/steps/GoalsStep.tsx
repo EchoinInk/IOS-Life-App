@@ -3,10 +3,12 @@
  * Multi-select based on their focus areas
  */
 
+import { useEffect } from 'react';
 import { OnboardingStepProps } from '../../types/onboarding.types';
 import { GOAL_LABELS, type ProductivityGoal } from '../../types/onboarding.types';
 import { Heading, Body } from '@/components/ui/Text';
 import { Surface } from '@/components/ui/Surface';
+import { useOnboardingAnalytics } from '@/analytics/analyticsHooks';
 
 const goalIcons: Record<ProductivityGoal, string> = {
   reduce_stress: '🧘',
@@ -27,8 +29,15 @@ const goalDescriptions: Record<ProductivityGoal, string> = {
 };
 
 export const GoalsStep = ({ data, updateData, onNext }: OnboardingStepProps) => {
+  const { stepViewed, stepCompleted } = useOnboardingAnalytics();
+  
   const selectedGoals = data.productivityGoals || [];
   const focusAreas = data.primaryFocusAreas || [];
+
+  // Track step view
+  useEffect(() => {
+    stepViewed('goals', 0, 5);
+  }, [stepViewed]);
 
   const toggleGoal = (goal: ProductivityGoal) => {
     const isSelected = selectedGoals.includes(goal);
@@ -46,6 +55,7 @@ export const GoalsStep = ({ data, updateData, onNext }: OnboardingStepProps) => 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedGoals.length > 0) {
+      stepCompleted('goals', 0);
       onNext();
     }
   };

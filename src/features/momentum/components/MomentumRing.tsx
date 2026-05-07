@@ -4,9 +4,10 @@
  * Uses momentum easing for smooth progress feel
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import { MomentumLevel } from '../types/momentum.types';
+import { useMomentumAnalytics } from '@/analytics/analyticsHooks';
 
 interface MomentumRingProps {
   score: number;
@@ -25,6 +26,12 @@ export const MomentumRing: React.FC<MomentumRingProps> = ({
   showPercentage = true,
   className = ''
 }) => {
+  const { viewed } = useMomentumAnalytics();
+
+  // Track momentum view when component mounts
+  useEffect(() => {
+    viewed(score, level);
+  }, [viewed, score, level]);
   const sizeConfig = {
     sm: { width: 60, height: 60, strokeWidth: 4 },
     md: { width: 80, height: 80, strokeWidth: 6 },

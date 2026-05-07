@@ -3,10 +3,12 @@
  * Multi-select with descriptions of each module
  */
 
+import { useEffect } from 'react';
 import { OnboardingStepProps } from '../../types/onboarding.types';
 import { MODULE_LABELS, type PreferredModule } from '../../types/onboarding.types';
 import { Heading, Body } from '@/components/ui/Text';
 import { Surface } from '@/components/ui/Surface';
+import { useOnboardingAnalytics } from '@/analytics/analyticsHooks';
 
 const moduleIcons: Record<PreferredModule, string> = {
   tasks: '✅',
@@ -27,8 +29,15 @@ const moduleDescriptions: Record<PreferredModule, string> = {
 };
 
 export const ModulesStep = ({ data, updateData, onNext }: OnboardingStepProps) => {
+  const { stepViewed, stepCompleted } = useOnboardingAnalytics();
+  
   const selectedModules = data.preferredModules || ['tasks']; // Default to tasks
   const focusAreas = data.primaryFocusAreas || [];
+
+  // Track step view
+  useEffect(() => {
+    stepViewed('modules', 3, 5);
+  }, [stepViewed]);
 
   const toggleModule = (module: PreferredModule) => {
     const isSelected = selectedModules.includes(module);
@@ -50,6 +59,7 @@ export const ModulesStep = ({ data, updateData, onNext }: OnboardingStepProps) =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedModules.length > 0) {
+      stepCompleted('modules', 3);
       onNext();
     }
   };

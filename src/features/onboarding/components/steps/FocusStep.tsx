@@ -3,10 +3,12 @@
  * Multi-select with visual icons and descriptions
  */
 
+import { useEffect } from 'react';
 import { OnboardingStepProps } from '../../types/onboarding.types';
 import { FOCUS_AREA_LABELS, type FocusArea } from '../../types/onboarding.types';
 import { Heading, Body } from '@/components/ui/Text';
 import { Surface } from '@/components/ui/Surface';
+import { useOnboardingAnalytics } from '@/analytics/analyticsHooks';
 
 const focusAreaIcons: Record<FocusArea, string> = {
   work: '💼',
@@ -29,7 +31,14 @@ const focusAreaDescriptions: Record<FocusArea, string> = {
 };
 
 export const FocusStep = ({ data, updateData, onNext }: OnboardingStepProps) => {
+  const { stepViewed, stepCompleted } = useOnboardingAnalytics();
+  
   const selectedAreas = data.primaryFocusAreas || [];
+
+  // Track step view
+  useEffect(() => {
+    stepViewed('focus', 2, 5);
+  }, [stepViewed]);
 
   const toggleArea = (area: FocusArea) => {
     const isSelected = selectedAreas.includes(area);
@@ -47,6 +56,7 @@ export const FocusStep = ({ data, updateData, onNext }: OnboardingStepProps) => 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedAreas.length > 0) {
+      stepCompleted('focus', 2);
       onNext();
     }
   };

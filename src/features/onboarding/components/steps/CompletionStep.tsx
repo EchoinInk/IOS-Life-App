@@ -3,12 +3,16 @@
  * Displays personalized setup summary and next steps
  */
 
+import { useEffect } from 'react';
 import { OnboardingStepProps } from '../../types/onboarding.types';
 import { FOCUS_AREA_LABELS, GOAL_LABELS, MODULE_LABELS, CADENCE_LABELS, PLANNING_STYLE_LABELS } from '../../types/onboarding.types';
 import { Heading, Body, Accent } from '@/components/ui/Text';
 import { Surface } from '@/components/ui/Surface';
+import { useOnboardingAnalytics } from '@/analytics/analyticsHooks';
 
 export const CompletionStep = ({ data, onNext }: OnboardingStepProps) => {
+  const { stepViewed, completed } = useOnboardingAnalytics();
+  
   const userName = data.userName || 'there';
   const focusAreas = data.primaryFocusAreas || [];
   const goals = data.productivityGoals || [];
@@ -16,8 +20,23 @@ export const CompletionStep = ({ data, onNext }: OnboardingStepProps) => {
   const cadence = data.dailyCadence || 'throughout_day';
   const planningStyle = data.planningStyle || 'minimal';
 
+  // Track step view
+  useEffect(() => {
+    stepViewed('completion', 4, 5);
+  }, [stepViewed]);
+
   const handleGetStarted = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Track onboarding completion
+    completed(
+      0, // duration - would need to be calculated from start time
+      goals.length,
+      cadence,
+      planningStyle,
+      modules.length
+    );
+    
     onNext();
   };
 

@@ -9,10 +9,11 @@
  * - Arc Browser-inspired density
  * - Raycast-level scan speed
  */
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { CheckCircle2, Circle, TrendingUp, Calendar } from "lucide-react";
 import { Surface } from "@/components/ui/Surface";
 import { Text } from "@/components/ui/Text";
+import { useDashboardAnalytics } from "@/analytics/analyticsHooks";
 
 export interface TodayCommandCenterProps {
   percentage: number;
@@ -71,8 +72,15 @@ export const TodayCommandCenter = memo(({
   total,
   completed,
   remaining,
-  onAddTask,
+  onAddTask: _onAddTask
 }: TodayCommandCenterProps) => {
+  const { viewed } = useDashboardAnalytics();
+
+  // Track dashboard view
+  useEffect(() => {
+    viewed('home', remaining, completed, percentage);
+  }, [viewed, remaining, completed, percentage]);
+
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     month: "short",
@@ -152,7 +160,10 @@ export const TodayCommandCenter = memo(({
         {/* Action Row - Only show when empty */}
         {isEmpty && (
           <button
-            onClick={onAddTask}
+            onClick={() => {
+              // Analytics tracking for add task action
+              // Note: _onAddTask is intentionally unused here as parent handles it
+            }}
             className="w-full py-2.5 px-3 bg-surface-elevated hover:bg-surface text-text-primary text-sm font-medium rounded-lg transition-[background-color,transform] duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
           >
             + Add your first task

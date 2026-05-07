@@ -8,6 +8,7 @@ import { Surface } from '@/components/ui/Surface';
 import { Text } from '@/components/ui/Text';
 import { DEFAULT_ROUTINE_TEMPLATES } from '@/features/routines/types/routineTypes';
 import type { RoutineTemplate } from '@/features/routines/types/routineTypes';
+import { useEmptyStateAnalytics, useRoutineAnalytics } from '@/analytics/analyticsHooks';
 
 export interface RoutineEmptyStateProps {
   onSelectTemplate: (template: RoutineTemplate) => void;
@@ -18,7 +19,26 @@ export const RoutineEmptyState: React.FC<RoutineEmptyStateProps> = ({
   onSelectTemplate,
   onDismiss
 }) => {
+  const { viewed: emptyStateViewed, ctaClicked: emptyStateCTAClicked, dismissed: emptyStateDismissed } = useEmptyStateAnalytics();
+  const { templateSelected: routineTemplateSelected } = useRoutineAnalytics();
+  
   const suggestedTemplates = DEFAULT_ROUTINE_TEMPLATES.slice(0, 3);
+
+  // Track empty state view
+  React.useEffect(() => {
+    emptyStateViewed('routines', 0);
+  }, [emptyStateViewed]);
+
+  const handleSelectTemplate = (template: RoutineTemplate) => {
+    routineTemplateSelected(template.name, 'suggested');
+    emptyStateCTAClicked('routines', template.name, 'browse_templates');
+    onSelectTemplate(template);
+  };
+
+  const handleDismiss = () => {
+    emptyStateDismissed('routines');
+    onDismiss();
+  };
 
   return (
     <Surface variant="subtle" className="p-6">
@@ -39,7 +59,7 @@ export const RoutineEmptyState: React.FC<RoutineEmptyStateProps> = ({
             <button
               key={template.name}
               type="button"
-              onClick={() => onSelectTemplate(template as RoutineTemplate)}
+              onClick={() => handleSelectTemplate(template as RoutineTemplate)}
               className="w-full text-left p-3 rounded-lg bg-surface-elevated hover:bg-surface-hover border border-border/50 transition-[background-color,transform] duration-200 active:scale-[0.98]"
             >
               <Text size="sm" weight="bold" tone="primary">
@@ -58,7 +78,7 @@ export const RoutineEmptyState: React.FC<RoutineEmptyStateProps> = ({
         {/* Dismiss */}
         <button
           type="button"
-          onClick={onDismiss}
+          onClick={handleDismiss}
           className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
         >
           Maybe later

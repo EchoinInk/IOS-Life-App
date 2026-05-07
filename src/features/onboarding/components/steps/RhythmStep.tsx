@@ -3,10 +3,12 @@
  * Single selection for planning style and daily rhythm
  */
 
+import { useEffect } from 'react';
 import { OnboardingStepProps } from '../../types/onboarding.types';
 import { CADENCE_LABELS, PLANNING_STYLE_LABELS, type DailyCadence, type PlanningStyle } from '../../types/onboarding.types';
 import { Heading, Body } from '@/components/ui/Text';
 import { Surface } from '@/components/ui/Surface';
+import { useOnboardingAnalytics } from '@/analytics/analyticsHooks';
 
 const cadenceIcons: Record<DailyCadence, string> = {
   morning_person: '🌅',
@@ -37,8 +39,15 @@ const styleDescriptions: Record<PlanningStyle, string> = {
 };
 
 export const RhythmStep = ({ data, updateData, onNext }: OnboardingStepProps) => {
+  const { stepViewed, stepCompleted } = useOnboardingAnalytics();
+  
   const selectedCadence = data.dailyCadence || 'throughout_day';
   const selectedStyle = data.planningStyle || 'minimal';
+
+  // Track step view
+  useEffect(() => {
+    stepViewed('rhythm', 1, 5);
+  }, [stepViewed]);
 
   const handleCadenceChange = (cadence: DailyCadence) => {
     updateData({ dailyCadence: cadence });
@@ -50,6 +59,7 @@ export const RhythmStep = ({ data, updateData, onNext }: OnboardingStepProps) =>
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    stepCompleted('rhythm', 1);
     onNext();
   };
 
