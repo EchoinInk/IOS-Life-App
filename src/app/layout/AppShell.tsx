@@ -17,7 +17,7 @@ interface AppShellProps {
 const AppShell = ({ children }: AppShellProps) => (
   <div className="min-h-screen bg-background">
     {/* CONTENT AREA - With bottom padding for nav */}
-    <div className="w-full max-w-[430px] mx-auto pb-[calc(72px+env(safe-area-inset-bottom))]">
+    <div className="w-full max-w-[430px] mx-auto pb-[calc(56px+env(safe-area-inset-bottom))]">
       <main className="min-h-screen">
         {children}
       </main>
