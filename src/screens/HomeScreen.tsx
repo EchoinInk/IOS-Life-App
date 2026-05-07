@@ -3,32 +3,21 @@
  * - No filtering / sorting in UI
  * - No business logic in components  
  * - Use selectors or hooks
+ * 
+ * HomeScreen is now a route-level wrapper that:
+ * - Provides layout shell
+ * - Handles provider wiring
+ * - Delegates to container/view architecture
  */
-import { useState, lazy, Suspense, useMemo } from "react";
-
-import Header from "@/components/layout/Header";
-import { Heading } from "@/components/ui/Text";
-
-import { TodayHeroCard } from "@/features/today/components/TodayHeroCard";
-import TodayQuickActionsGrid from "@/features/today/components/TodayQuickActionsGrid";
-import { UpNextCard } from "@/features/today/components/UpNextCard";
-
 import { AddTaskModal } from "@/features/tasks";
 import AddExpense from "@/features/budget/components/AddExpenseModal";
 import { AddMealModal } from "@/features/meals";
 
-import { useBudgetStore } from "@/features/budget/store/useBudgetStore";
-import { useMealsStore } from "@/features/meals/store/useMealsStore";
-import { useTasksStore } from "@/features/tasks/store/useTasksStore";
+import { useHomeDashboard } from "@/features/home/hooks/useHomeDashboard";
+import { useHomeModals } from "@/features/home/hooks/useHomeModals";
 
-import { useTodayData } from "@/features/today/hooks/useTodayData";
-import { selectNextTask } from "@/features/tasks/selectors/taskSelectors";
-import { getToday } from "@/shared/lib/date";
-
-// ✅ Lazy load Insights (correct pattern)
-const InsightsCardContainer = lazy(() =>
-  import("@/features/insights/components/InsightsCard.container").then((m) => ({ default: m.InsightsCardContainer })),
-);
+import { HomeDashboardView } from "@/components/home/HomeDashboardView";
+import { HomeHeader } from "@/components/home/HomeHeader";
 
 const greetingFor = (d: Date): string => {
   const h = d.getHours();
@@ -37,27 +26,26 @@ const greetingFor = (d: Date): string => {
   return "Good evening 👋";
 };
 
+/**
+ * Home Screen (Route-Level Wrapper)
+ * 
+ * Responsibilities:
+ * - Route-level layout shell
+ * - Provider wiring
+ * - Modal rendering
+ * - Background styling
+ * 
+ * Business logic and orchestration are delegated to:
+ * - useHomeDashboard (data and actions)
+ * - useHomeModals (modal state)
+ * - HomeDashboardView (pure UI)
+ */
 const HomeScreen = () => {
-  // ✅ MUST be inside component (fixes midnight bug)
-  const todayStr = getToday();
+  // Container hooks for orchestration
+  const data = useHomeDashboard();
+  const modals = useHomeModals();
 
-  // STORES
-  const addExpense = useBudgetStore((s) => s.addExpense);
-  const addMeal = useMealsStore((s) => s.addMeal);
-  const toggleTask = useTasksStore((s) => s.toggleTask);
-
-  const tasks = useTasksStore((s) => s.tasks);
-  const nextTask = useMemo(() => selectNextTask(tasks, todayStr), [tasks, todayStr]);
-
-  // MODAL STATE
-  const [taskOpen, setTaskOpen] = useState(false);
-  const [expenseOpen, setExpenseOpen] = useState(false);
-  const [mealOpen, setMealOpen] = useState(false);
-
-  // DATA
-  const today = useTodayData();
-
-  // ✅ simple + correct
+  // Simple presentation logic
   const greeting = greetingFor(new Date());
 
   return (
@@ -82,55 +70,31 @@ const HomeScreen = () => {
         {/* CONTENT */}
         <div className="relative z-10 w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(96px+env(safe-area-inset-bottom))] space-y-4">
           {/* HEADER */}
-          <Header showTopBar greeting={greeting} topBarSubtitle="Let's make today amazing" hasNotifications={false} />
+          <HomeHeader greeting={greeting} />
 
-          {/* HERO */}
-          <div className="animate-[fadeIn_0.45s_ease-out]">
-            <TodayHeroCard
-              percentage={today.focus.percentage}
-              total={today.summary.tasks.total}
-              completed={today.summary.tasks.completed}
-              onAddTask={() => setTaskOpen(true)}
-            />
-          </div>
-
-          {/* UP NEXT */}
-          <div className="animate-[fadeIn_0.65s_ease-out]">
-            <div className="flex items-center justify-between mb-3">
-              <Heading className="text-base text-muted">Up Next</Heading>
-            </div>
-
-            <UpNextCard task={nextTask} onPress={() => nextTask && toggleTask(nextTask.id)} />
-          </div>
-
-          {/* QUICK ACTIONS */}
-          <div className="animate-[fadeIn_0.85s_ease-out]">
-            <TodayQuickActionsGrid
-              tasks={today.summary.tasks.total}
-              meals={today.summary.meals.logged}
-              remaining={today.summary.budget.remaining}
-              onAddTask={() => setTaskOpen(true)}
-              onAddMeal={() => setMealOpen(true)}
-              onAddExpense={() => setExpenseOpen(true)}
-            />
-          </div>
-
-          {/* INSIGHTS */}
-          <Suspense fallback={<div className="h-24 animate-pulse bg-muted opacity-20 rounded-lg" />}>
-            <div className="animate-[fadeIn_1.05s_ease-out]">
-              <InsightsCardContainer />
-            </div>
-          </Suspense>
+          {/* DASHBOARD VIEW */}
+          <HomeDashboardView data={data} modals={modals} />
         </div>
       </div>
 
       {/* MODALS */}
+      <AddTaskModal 
+        open={modals.taskOpen} 
+        onClose={modals.closeTaskModal} 
+        defaultDate={data.todayStr} 
+      />
 
-      <AddTaskModal open={taskOpen} onClose={() => setTaskOpen(false)} defaultDate={todayStr} />
+      <AddMealModal 
+        open={modals.mealOpen} 
+        onClose={modals.closeMealModal} 
+        onSave={data.addMeal} 
+      />
 
-      <AddMealModal open={mealOpen} onClose={() => setMealOpen(false)} onSave={addMeal} />
-
-      <AddExpense open={expenseOpen} onClose={() => setExpenseOpen(false)} onSave={addExpense} />
+      <AddExpense 
+        open={modals.expenseOpen} 
+        onClose={modals.closeExpenseModal} 
+        onSave={data.addExpense} 
+      />
     </>
   );
 };
