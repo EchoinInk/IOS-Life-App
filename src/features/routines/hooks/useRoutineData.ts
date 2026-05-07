@@ -6,40 +6,32 @@
 import { useMemo } from 'react';
 import { useRoutinesStore } from '../store/routinesStore';
 import { getTodayString } from '../utils/dateUtils';
-import { 
-  generateCompletionStats
-} from '../domain/routineScoring';
-import {
-  getTasksDueToday,
-  getOverdueTasks
-} from '../domain/recurrenceEngine';
 import type {
   RoutineInstance,
-  RoutineProgress,
-  RoutineCompletionStats,
-  RecurringTaskInstance,
+  RoutineTemplate,
   FocusSession,
-  RoutineTemplate
-} from '../types/routines.types';
+  RoutineProgress
+} from '../types/routineTypes';
+import type { RoutineCompletionStats } from '../types/routines.types';
 
 export interface RoutineData {
   // Today's data
   todayRoutines: RoutineInstance[];
   todayProgress: RoutineProgress;
-  todayRecurringTasks: RecurringTaskInstance[];
-  overdueTasks: RecurringTaskInstance[];
-  
+  todayRecurringTasks: unknown[];
+  overdueTasks: unknown[];
+
   // Templates
   activeTemplates: RoutineTemplate[];
-  
+
   // Focus sessions
   activeFocusSession: FocusSession | undefined;
   todayFocusSessions: FocusSession[];
-  
+
   // Historical data
   allHistory: RoutineInstance[];
   completionStats: RoutineCompletionStats;
-  
+
   // Computed values
   isLoading: boolean;
   error: string | null;
@@ -56,12 +48,12 @@ export const useRoutineData = (): RoutineData => {
   // Memoized today's routines
   const todayRoutines = useMemo(() => {
     const today = getTodayString();
-    return Object.values(state.todayRoutines)
-      .filter(routine => routine.date === today);
-  }, [state.todayRoutines]);
+    return Object.values(state.instances)
+      .filter((routine): routine is RoutineInstance => routine.date === today);
+  }, [state.instances]);
 
   // Memoized today's progress
-  const todayProgress = useMemo(() => {
+  const todayProgress = useMemo((): RoutineProgress => {
     const totalRoutines = todayRoutines.length;
     const completedRoutines = todayRoutines.filter(r => r.status === 'completed').length;
     const inProgressRoutines = todayRoutines.filter(r => r.status === 'in_progress').length;
@@ -81,22 +73,11 @@ export const useRoutineData = (): RoutineData => {
     };
   }, [todayRoutines, state.focusSessions]);
 
-  // Memoized recurring tasks
-  const todayRecurringTasks = useMemo(() => {
-    const allTasks = Object.values(state.recurringTasks);
-    return getTasksDueToday(allTasks);
-  }, [state.recurringTasks]);
-
-  const overdueTasks = useMemo(() => {
-    const allTasks = Object.values(state.recurringTasks);
-    return getOverdueTasks(allTasks);
-  }, [state.recurringTasks]);
-
   // Memoized active templates
   const activeTemplates = useMemo(() => {
-    return Object.values(state.routineTemplates)
+    return Object.values(state.templates)
       .filter(template => template.isActive);
-  }, [state.routineTemplates]);
+  }, [state.templates]);
 
   // Memoized focus sessions
   const activeFocusSession = useMemo(() => {
@@ -113,21 +94,25 @@ export const useRoutineData = (): RoutineData => {
       });
   }, [state.focusSessions]);
 
-  // Memoized historical data
-  const allHistory = useMemo(() => {
-    return Object.values(state.routineHistory).flat();
-  }, [state.routineHistory]);
+  // No history in current store - return empty
+  const allHistory = useMemo(() => [] as RoutineInstance[], []);
 
-  // Memoized completion stats
-  const completionStats = useMemo(() => {
-    return generateCompletionStats(allHistory);
-  }, [allHistory]);
+  // Default completion stats
+  const completionStats = useMemo((): RoutineCompletionStats => ({
+    overallCompletionRate: 0,
+    typeCompletionRates: { morning: 0, evening: 0, weekly: 0, focus: 0, planning: 0 },
+    weeklyCompletionRate: 0,
+    monthlyCompletionRate: 0,
+    currentStreaks: { morning: 0, evening: 0, weekly: 0, focus: 0, planning: 0 },
+    longestStreaks: { morning: 0, evening: 0, weekly: 0, focus: 0, planning: 0 },
+    averageMomentumContribution: 0
+  }), []);
 
   return {
     todayRoutines,
     todayProgress,
-    todayRecurringTasks,
-    overdueTasks,
+    todayRecurringTasks: [],
+    overdueTasks: [],
     activeTemplates,
     activeFocusSession,
     todayFocusSessions,
