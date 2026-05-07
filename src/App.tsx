@@ -13,6 +13,7 @@ const BudgetPage = lazy(() => import("@/features/budget/pages/BudgetPage"));
 const MealPlannerPage = lazy(() => import("@/features/meals/pages/MealPlannerPage"));
 const ShoppingListPage = lazy(() => import("@/features/shopping/pages/ShoppingListPage"));
 const RecipesPage = lazy(() => import("@/features/recipes/pages/RecipesPage"));
+const OnboardingScreen = lazy(() => import("@/features/onboarding/OnboardingScreen"));
 
 const AppContent = () => {
   // Initialize notifications hook for daily reminders
@@ -24,6 +25,7 @@ const AppContent = () => {
         <Suspense fallback={<LoadingState message="Loading..." />}>
           <Routes>
             <Route path="/" element={<HomeScreen />} />
+            <Route path="/onboarding" element={<OnboardingScreen />} />
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/budget" element={<BudgetPage />} />
             <Route path="/meals" element={<MealPlannerPage />} />
