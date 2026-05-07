@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useCallback, type ReactNode } from "react";
+import clsx from "clsx";
 import { Card, CardHeader } from "@/components/ui/Card";
 
 interface BottomSheetDialogProps {
@@ -16,6 +17,12 @@ interface BottomSheetDialogProps {
  * - Handles keyboard avoidance automatically
  * - Safe area support for notched devices
  * - 85vh max height for content visibility
+ *
+ * Motion System:
+ * - Backdrop fade-in with 200ms duration
+ * - Sheet slides up with momentum easing
+ * - 400ms page-level timing for smooth feel
+ * - Focus trap with animation completion
  */
 export const BottomSheetDialog = ({
   open,
@@ -26,6 +33,16 @@ export const BottomSheetDialog = ({
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Handle close with animation
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 200); // Match exit animation duration
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -33,12 +50,14 @@ export const BottomSheetDialog = ({
     // Store previous focus for restoration
     previousFocus.current = document.activeElement as HTMLElement | null;
 
-    // Focus trap management
-    requestAnimationFrame(() => panelRef.current?.focus());
+    // Focus trap management - delay until animation completes
+    const focusTimer = setTimeout(() => {
+      panelRef.current?.focus();
+    }, 100);
 
     // Handle escape key and body scroll lock
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") handleClose();
     };
 
     // Lock body scroll when open
@@ -46,23 +65,25 @@ export const BottomSheetDialog = ({
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
+      clearTimeout(focusTimer);
       document.body.style.overflow = "";
       document.removeEventListener("keydown", onKeyDown);
       previousFocus.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open, handleClose]);
 
   if (!open) return null;
 
   return (
     <div
-      className="
-        fixed inset-0 z-50
-        flex items-end justify-center
-        bg-background/50
-        animate-in fade-in duration-200
-      "
-      onClick={onClose}
+      className={clsx(
+        "fixed inset-0 z-50 flex items-end justify-center",
+        "bg-background/80 backdrop-blur-sm",
+        "transition-opacity duration-200 ease-motion-out",
+        isClosing ? "opacity-0" : "opacity-100",
+        "motion-reduce:transition-none motion-reduce:backdrop-blur-none"
+      )}
+      onClick={handleClose}
       aria-hidden="true"
     >
       <div
@@ -71,11 +92,12 @@ export const BottomSheetDialog = ({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="
-          w-full max-w-[430px]
-          animate-in slide-in-from-bottom duration-300 ease-out
-          focus:outline-none
-        "
+        className={clsx(
+          "w-full max-w-[430px] focus:outline-none",
+          "transition-transform duration-300 ease-motion-momentum",
+          isClosing ? "translate-y-full" : "translate-y-0",
+          "motion-reduce:transition-none"
+        )}
         onClick={(event) => event.stopPropagation()}
       >
         <Card className="overflow-hidden rounded-t-2xl shadow-none border-0">
@@ -90,13 +112,11 @@ export const BottomSheetDialog = ({
           {/* CONTENT */}
           <div className="flex flex-col max-h-[85vh]">
             <div
-              className="
-                flex-1
-                overflow-y-auto
-                overscroll-contain
-                px-4 py-4
-                pb-[calc(120px+env(safe-area-inset-bottom))]
-              "
+              className={clsx(
+                "flex-1 overflow-y-auto overscroll-contain px-4 py-4",
+                "pb-[calc(120px+env(safe-area-inset-bottom))]",
+                "animate-fade-in-up motion-reduce:animate-none"
+              )}
             >
               {children}
             </div>

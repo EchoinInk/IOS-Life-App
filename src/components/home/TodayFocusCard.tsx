@@ -4,6 +4,7 @@
  * one dense, high-signal surface.
  */
 import { memo, useCallback } from "react";
+import clsx from "clsx";
 import { ArrowRight, Check, Plus } from "lucide-react";
 import { Surface } from "@/components/ui/Surface";
 import { Text } from "@/components/ui/Text";
@@ -91,13 +92,21 @@ export const TodayFocusCard = memo(
           </div>
         </div>
 
-        {/* PROGRESS BAR — slim, sharp */}
+        {/* PROGRESS BAR — slim, sharp with momentum easing */}
         <div className="px-4 pb-3">
           <div className="h-1.5 w-full bg-surface-inset rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary rounded-full transition-[width] duration-500 ease-out shadow-sm"
+              className={clsx(
+                "h-full bg-primary rounded-full shadow-sm relative",
+                "transition-[width] duration-300 ease-motion-momentum",
+                "motion-reduce:transition-none",
+                percentage >= 100 && "animate-success-pop motion-reduce:animate-none"
+              )}
               style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
-            />
+            >
+              {/* Subtle shimmer for visual interest */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer motion-reduce:animate-none" />
+            </div>
           </div>
         </div>
 

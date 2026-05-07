@@ -14,6 +14,12 @@ import listsIcon from "@/assets/navigation/lists.webp";
  * - Thumb-zone accessibility (frequent items centered)
  * - Clear visual feedback (active state with scale + color)
  * - Reduced item count for faster scanning
+ *
+ * Motion System:
+ * - 150ms color transitions for smooth state changes
+ * - Active indicator with smooth appearance
+ * - Subtle 3% scale on press for tactile feedback
+ * - Opacity transitions for icon states
  */
 const navItems = [
   { path: "/", label: "Today", icon: todayIcon },
@@ -35,7 +41,9 @@ const BottomNav = () => (
         className={({ isActive }) =>
           clsx(
             "group relative flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 gap-0.5",
-            "transition-colors duration-150",
+            "transition-all duration-150 ease-motion-out",
+            "active:scale-[0.97]",
+            "motion-reduce:transition-none motion-reduce:active:scale-100",
             isActive
               ? "text-primary"
               : "text-text-muted hover:text-text-primary"
@@ -52,16 +60,27 @@ const BottomNav = () => (
               loading="lazy"
               decoding="async"
               className={clsx(
-                "w-[22px] h-[22px] object-contain transition-opacity",
-                isActive ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+                "w-[22px] h-[22px] object-contain transition-all duration-150 ease-motion-out",
+                "group-hover:scale-105",
+                isActive ? "opacity-100 scale-105" : "opacity-70 group-hover:opacity-100"
               )}
             />
-            <span className="text-[10px] leading-none font-medium tracking-tight">
+            <span className={clsx(
+              "text-[10px] leading-none font-medium tracking-tight transition-all duration-150",
+              isActive && "font-semibold"
+            )}>
               {label}
             </span>
-            {isActive && (
-              <span className="absolute -top-px h-0.5 w-8 rounded-full bg-primary" />
-            )}
+            {/* Active Indicator - smooth appearance */}
+            <span
+              className={clsx(
+                "absolute -top-px h-0.5 w-8 rounded-full bg-primary",
+                "transition-all duration-200 ease-motion-out",
+                isActive
+                  ? "opacity-100 scale-x-100"
+                  : "opacity-0 scale-x-0"
+              )}
+            />
           </>
         )}
       </NavLink>

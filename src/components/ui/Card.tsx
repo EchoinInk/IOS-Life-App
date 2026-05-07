@@ -17,12 +17,24 @@ const variantClass: Record<CardVariant, string> = {
   budget: "bg-gradient-primary text-text-on-primary shadow-md",
 };
 
+/**
+ * Card Motion System
+ * - 150ms transitions for smooth state changes
+ * - 1px lift on hover for depth feedback
+ * - 2% scale compression on press for tactile feel
+ * - Shadow progression: none → sm → md on hover
+ */
 export const Card = ({ variant = "default", interactive = false, className, children, ...props }: CardProps) => (
   <div
     className={clsx(
       "rounded-xl overflow-hidden",
       variantClass[variant],
-      interactive && "transition-all duration-150 ease-out hover:shadow-md active:scale-[0.98]",
+      interactive && [
+        "transition-all duration-150 ease-motion-out",
+        "hover:-translate-y-0.5 hover:shadow-md",
+        "active:translate-y-0 active:scale-[0.99] active:shadow-sm",
+        "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+      ],
       className,
     )}
     {...props}

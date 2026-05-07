@@ -1,3 +1,4 @@
+/* postcss: ignore-at-rules: tailwind, apply, layer */
 /* tailwindcss - @tailwind directives are processed by PostCSS */
 @tailwind base;
 @tailwind components;
@@ -184,13 +185,57 @@
   }
 }
 
-/* ---------------- MOTION ---------------- */
+/* ============================================================================
+   LUMO MOTION SYSTEM — Premium Momentum-Focused Animations
+   ============================================================================ */
 
+/* --------------------------------------------------------------------------
+   Motion CSS Variables (for consistent timing in CSS)
+   -------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Durations */
+    --motion-instant: 50ms;
+    --motion-micro: 100ms;
+    --motion-fast: 150ms;
+    --motion-normal: 200ms;
+    --motion-slow: 300ms;
+    --motion-page: 400ms;
 
+    /* Easing */
+    --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --motion-ease-out-sharp: cubic-bezier(0.33, 1, 0.68, 1);
+    --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --motion-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --motion-momentum: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Stagger */
+    --motion-stagger-tight: 30ms;
+    --motion-stagger-normal: 50ms;
+    --motion-stagger-relaxed: 80ms;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Keyframe Animations
+   -------------------------------------------------------------------------- */
+
+/* Entrance: Fade In */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Entrance: Fade In Up (cards, content) */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -198,9 +243,274 @@
   }
 }
 
+/* Entrance: Fade In Down (dropdowns) */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Entrance: Scale In (modals) */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Entrance: Slide In From Bottom (mobile sheets) */
+@keyframes slideInBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Entrance: Slide In From Right (navigation) */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Exit: Fade Out */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Exit: Scale Out */
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Exit: Slide Out To Bottom */
+@keyframes slideOutBottom {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Progress: Smooth Width Transition */
+@keyframes progress {
+  from {
+    width: 0%;
+  }
+}
+
+/* Ring: Circular Progress (for SVG stroke-dashoffset) */
+@keyframes ring {
+  from {
+    stroke-dashoffset: var(--ring-circumference, 283);
+  }
+  to {
+    stroke-dashoffset: var(--ring-target, 0);
+  }
+}
+
+/* Loading: Spinner Rotation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading: Skeleton Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Feedback: Pulse (subtle) */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Feedback: Success Pop (completion) */
+@keyframes successPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Feedback: Streak Glow */
+@keyframes streakGlow {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.9;
+    filter: brightness(1.1);
+  }
+}
+
+/* Stagger: List Item Entrance */
+@keyframes listItemEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Animation Utility Classes
+   -------------------------------------------------------------------------- */
+@layer utilities {
+  /* Entrance */
+  .animate-fade-in {
+    animation: fadeIn var(--motion-normal) var(--motion-ease-out) forwards;
+  }
+  .animate-fade-in-up {
+    animation: fadeInUp var(--motion-normal) var(--motion-momentum) forwards;
+  }
+  .animate-fade-in-down {
+    animation: fadeInDown var(--motion-normal) var(--motion-momentum) forwards;
+  }
+  .animate-scale-in {
+    animation: scaleIn var(--motion-slow) var(--motion-spring) forwards;
+  }
+  .animate-slide-in-bottom {
+    animation: slideInBottom var(--motion-page) var(--motion-momentum) forwards;
+  }
+  .animate-slide-in-right {
+    animation: slideInRight var(--motion-page) var(--motion-momentum) forwards;
+  }
+
+  /* Exit */
+  .animate-fade-out {
+    animation: fadeOut var(--motion-fast) var(--motion-ease-in) forwards;
+  }
+  .animate-scale-out {
+    animation: scaleOut var(--motion-fast) var(--motion-ease-in) forwards;
+  }
+  .animate-slide-out-bottom {
+    animation: slideOutBottom var(--motion-normal) var(--motion-ease-in) forwards;
+  }
+
+  /* Progress & Loading */
+  .animate-spin-smooth {
+    animation: spin 0.8s linear infinite;
+  }
+  .animate-pulse-subtle {
+    animation: pulse 2s var(--motion-ease-in-out) infinite;
+  }
+  .animate-skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--surface-elevated) 25%,
+      var(--surface-hover) 50%,
+      var(--surface-elevated) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  .animate-streak {
+    animation: streakGlow 2s var(--motion-ease-in-out) infinite;
+  }
+  .animate-success-pop {
+    animation: successPop var(--motion-slow) var(--motion-spring);
+  }
+
+  /* List stagger utility */
+  .animate-list-item {
+    animation: listItemEnter var(--motion-fast) var(--motion-ease-out) forwards;
+    opacity: 0;
+  }
+
+  /* Stagger delays */
+  .stagger-1 { animation-delay: calc(var(--motion-stagger-normal) * 1); }
+  .stagger-2 { animation-delay: calc(var(--motion-stagger-normal) * 2); }
+  .stagger-3 { animation-delay: calc(var(--motion-stagger-normal) * 3); }
+  .stagger-4 { animation-delay: calc(var(--motion-stagger-normal) * 4); }
+  .stagger-5 { animation-delay: calc(var(--motion-stagger-normal) * 5); }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-fade-in-up,
+    .animate-fade-in-down,
+    .animate-scale-in,
+    .animate-slide-in-bottom,
+    .animate-slide-in-right,
+    .animate-fade-out,
+    .animate-scale-out,
+    .animate-slide-out-bottom,
+    .animate-list-item {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .animate-spin-smooth,
+    .animate-pulse-subtle,
+    .animate-skeleton,
+    .animate-streak {
+      animation: none;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion Support (Global)
+   -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -10,6 +10,13 @@ interface ProgressBarProps {
   ariaLabel?: string;
 }
 
+/**
+ * ProgressBar Motion System
+ * - Momentum easing (cubic-bezier 0.16, 1, 0.3, 1) for progress feel
+ * - 300ms duration for visible but not sluggish progress
+ * - Subtle shimmer on complete for positive feedback
+ * - Smooth width transitions using CSS custom properties
+ */
 const ProgressBarBase = ({
   value,
   max = 100,
@@ -19,6 +26,7 @@ const ProgressBarBase = ({
   ariaLabel,
 }: ProgressBarProps) => {
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  const isComplete = pct >= 100;
 
   const sizeClass = {
     sm: "h-1.5",
@@ -54,11 +62,23 @@ const ProgressBarBase = ({
     >
       <div
         className={clsx(
-          "h-full rounded-full transition-[width] duration-500 ease-out",
+          "h-full rounded-full relative",
+          "transition-[width] duration-300 ease-motion-momentum",
+          "motion-reduce:transition-none",
           fillClass[variant],
+          isComplete && "animate-success-pop motion-reduce:animate-none"
         )}
         style={{ width: `${pct}%` }}
-      />
+      >
+        {/* Subtle shimmer overlay for visual interest */}
+        <div
+          className={clsx(
+            "absolute inset-0 rounded-full",
+            "bg-gradient-to-r from-transparent via-white/20 to-transparent",
+            "animate-shimmer motion-reduce:animate-none"
+          )}
+        />
+      </div>
     </div>
   );
 };

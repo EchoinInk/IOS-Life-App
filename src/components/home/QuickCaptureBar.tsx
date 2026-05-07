@@ -11,6 +11,7 @@
  * - Immediate visual feedback
  */
 import { memo, useCallback } from "react";
+import clsx from "clsx";
 import { Plus, Utensils, DollarSign } from "lucide-react";
 
 export interface QuickCaptureBarProps {
@@ -27,6 +28,13 @@ interface CaptureButtonProps {
   priority?: boolean;
 }
 
+/**
+ * CaptureButton Motion System
+ * - 150ms transitions for smooth state changes
+ * - 5% scale compression on press for tactile feedback
+ * - Icon hover scale for visual delight
+ * - Consistent focus rings for accessibility
+ */
 const CaptureButton = ({
   icon: Icon,
   label,
@@ -36,33 +44,36 @@ const CaptureButton = ({
 }: CaptureButtonProps) => {
   const colorClass = {
     primary: priority
-      ? "bg-primary text-text-on-primary hover:brightness-110"
-      : "bg-surface-elevated text-text-primary hover:bg-surface",
-    success: "bg-surface-elevated text-success hover:bg-success/10",
-    warning: "bg-surface-elevated text-warning hover:bg-warning/10",
+      ? "bg-primary text-text-on-primary hover:brightness-110 hover:shadow-md"
+      : "bg-surface-elevated text-text-primary hover:bg-surface hover:shadow-sm",
+    success: "bg-surface-elevated text-success hover:bg-success/10 hover:shadow-sm",
+    warning: "bg-surface-elevated text-warning hover:bg-warning/10 hover:shadow-sm",
   };
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`
-        group flex flex-col items-center justify-center
-        min-w-[72px] min-h-[72px] sm:min-w-[80px] sm:min-h-[80px]
-        rounded-2xl
-        ${colorClass[color]}
-        transition-all duration-150 ease-out
-        active:scale-95
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20
-        shadow-sm
-      `}
+      className={clsx(
+        "group flex flex-col items-center justify-center",
+        "min-w-[72px] min-h-[72px] sm:min-w-[80px] sm:min-h-[80px]",
+        "rounded-2xl shadow-sm",
+        colorClass[color],
+        "transition-all duration-150 ease-motion-out",
+        "active:scale-[0.95] active:shadow-none",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
+        "motion-reduce:transition-none motion-reduce:active:scale-100"
+      )}
       aria-label={label}
     >
       <Icon
         size={priority ? 28 : 22}
-        className={`transition-transform duration-150 group-hover:scale-110 ${
-          priority ? "mb-1" : "mb-0.5"
-        }`}
+        className={clsx(
+          "transition-transform duration-150 ease-motion-out",
+          "group-hover:scale-110",
+          priority ? "mb-1" : "mb-0.5",
+          "motion-reduce:transition-none"
+        )}
       />
       <span className="text-[10px] sm:text-xs font-medium leading-none">
         {label}

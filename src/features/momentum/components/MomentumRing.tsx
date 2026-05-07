@@ -1,9 +1,11 @@
 /**
  * Momentum Ring - Circular progress indicator for momentum score
  * Premium, calm visualization without gamification
+ * Uses momentum easing for smooth progress feel
  */
 
 import React from 'react';
+import clsx from 'clsx';
 import { MomentumLevel } from '../types/momentum.types';
 
 interface MomentumRingProps {
@@ -82,7 +84,7 @@ export const MomentumRing: React.FC<MomentumRingProps> = ({
           className="text-surface-elevated"
         />
         
-        {/* Progress circle */}
+        {/* Progress circle with momentum animation */}
         <circle
           cx={config.width / 2}
           cy={config.height / 2}
@@ -93,7 +95,12 @@ export const MomentumRing: React.FC<MomentumRingProps> = ({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className={`${getProgressColor(level)} transition-all duration-500 ease-out`}
+          className={clsx(
+            getProgressColor(level),
+            "transition-all duration-500 ease-motion-momentum",
+            "motion-reduce:transition-none",
+            score >= 100 && "animate-success-pop motion-reduce:animate-none"
+          )}
         />
       </svg>
       

@@ -35,6 +35,13 @@ const radiusClass: Record<SurfaceRadius, string> = {
   xl: "rounded-2xl",
 };
 
+/**
+ * Surface Motion System
+ * - 150ms transitions for responsive feedback
+ * - Subtle background color shift on hover
+ * - 2% scale compression on press
+ * - Smooth shadow transitions for depth
+ */
 export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
   ({ className, variant = "default", padding = "md", radius = "lg", interactive = false, as: Tag = "div", ...props }, ref) => {
     return (
@@ -44,7 +51,12 @@ export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
           variantClass[variant],
           paddingClass[padding],
           radiusClass[radius],
-          interactive && "transition-all duration-200 ease-out hover:bg-surface-elevated active:scale-[0.98]",
+          interactive && [
+            "transition-all duration-150 ease-motion-out",
+            "hover:bg-surface-elevated hover:shadow-sm",
+            "active:scale-[0.99] active:bg-surface-active",
+            "motion-reduce:transition-none",
+          ],
           className,
         )}
         {...props}
