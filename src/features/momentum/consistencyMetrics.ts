@@ -64,7 +64,7 @@ export class ConsistencyCalculator {
     const consistency: Partial<Record<MomentumCategory, number>> = {};
 
     categories.forEach(category => {
-      const categoryScores = scores.map(s => s.categoryScores[category] || 0);
+      const categoryScores = scores.map(s => s.categoryScores[category] ?? 0);
       
       if (categoryScores.length === 0) {
         consistency[category] = 0;
@@ -105,7 +105,7 @@ export class ConsistencyCalculator {
     const totalWeeks = scores.length / 7;
     Object.keys(pattern).forEach(day => {
       const dayIndex = parseInt(day);
-      pattern[dayIndex] = totalWeeks > 0 ? Math.round((pattern[dayIndex] / totalWeeks) * 100) : 0;
+      pattern[dayIndex] = totalWeeks > 0 ? Math.round(((pattern[dayIndex] ?? 0) / totalWeeks) * 100) : 0;
     });
 
     return pattern;
@@ -136,7 +136,7 @@ export class ConsistencyCalculator {
     if (totalActivities > 0) {
       Object.keys(pattern).forEach(hour => {
         const hourIndex = parseInt(hour);
-        pattern[hourIndex] = Math.round((pattern[hourIndex] / totalActivities) * 100);
+        pattern[hourIndex] = Math.round(((pattern[hourIndex] ?? 0) / totalActivities) * 100);
       });
     }
 
@@ -151,7 +151,7 @@ export class ConsistencyCalculator {
 
     scores.forEach(score => {
       score.activities.forEach(activity => {
-        const focusArea = activity.metadata?.focusArea || 'general';
+        const focusArea = (activity.metadata?.focusArea as string | undefined) || 'general';
         
         if (!focusAreaScores[focusArea]) {
           focusAreaScores[focusArea] = [];
@@ -300,8 +300,8 @@ export class ConsistencyCalculator {
       recommendations.push(`Your ${this.getDayName(worstDay.day)} could use more attention`);
     }
 
-    if (bestDay !== null && metrics.weeklyPattern[bestDay] > 80) {
-      recommendations.push(`You're strongest on ${this.getDayName(bestDay)} - leverage this for important tasks`);
+    if ((metrics.weeklyPattern[bestDay.day] ?? 0) > 80) {
+      recommendations.push(`You're strongest on ${this.getDayName(bestDay.day)} - leverage this for important tasks`);
     }
 
     return recommendations;

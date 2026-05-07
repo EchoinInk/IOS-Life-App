@@ -14,15 +14,20 @@ export const InsightsCardContainer = () => {
     const insightData: InsightData = {
       tasksCompleted: today.summary.tasks.completed,
       tasksTotal: today.summary.tasks.total,
-      expenses: [], // Would need expense data with dates for accurate insights
+      expenses: [],
       mealsLogged: today.summary.meals.logged,
       mealsTarget: today.summary.meals.target,
       budgetRemaining: today.summary.budget.remaining,
       budgetTotal: budgetData.weeklyBudget,
-      shoppingCompleted: 0, // Would need shopping completion data
+      shoppingCompleted: 0,
       shoppingTotal: 0,
       streakTasks: streaks.tasks.current,
       streakMeals: streaks.meals.current,
+      routinesCompleted: 0,
+      routinesTotal: 0,
+      routineStreak: 0,
+      morningRoutineCompleted: false,
+      eveningRoutineCompleted: false,
     };
 
     const allInsights = generateInsights(insightData);

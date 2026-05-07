@@ -217,7 +217,9 @@ export const predictStreakContinuation = (
     if (completedDays.length > 1) {
       const gaps: number[] = [];
       for (let i = 1; i < completedDays.length; i++) {
-        gaps.push(completedDays[i] - completedDays[i - 1]);
+        const current = completedDays[i]!;
+        const prev = completedDays[i - 1]!;
+        gaps.push(current - prev);
       }
       
       const avgGap = gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length;

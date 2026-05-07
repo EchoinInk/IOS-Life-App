@@ -8,7 +8,6 @@ import { useRoutinesStore } from '../store/routinesStore';
 import { getTodayString } from '../utils/dateUtils';
 import { calculateStepMomentum, calculateRoutineMomentum } from '../domain/routineScoring';
 import { generateRecurringTasks } from '../domain/recurrenceEngine';
-import { nanoid } from 'nanoid';
 import type {
   RoutineTemplate,
   RoutineInstance,
@@ -18,31 +17,31 @@ import type {
   PlanningRitual,
   RoutineStatus,
   FocusSessionStatus
-} from '../types/routines.types';
+} from '../types/routineTypes';
 
 export interface RoutineActions {
   // Template actions
   createRoutineTemplate: (template: Omit<RoutineTemplate, 'id' | 'createdAt'>) => void;
   updateRoutineTemplate: (id: string, updates: Partial<RoutineTemplate>) => void;
   deleteRoutineTemplate: (id: string) => void;
-  
+
   // Routine instance actions
   startRoutine: (templateId: string, date?: string) => void;
   completeRoutineStep: (instanceId: string, stepId: string, notes?: string) => void;
   skipRoutineStep: (instanceId: string, stepId: string) => void;
   completeRoutine: (instanceId: string) => void;
   skipRoutine: (instanceId: string) => void;
-  
+
   // Focus session actions
   startFocusSession: (session: Omit<FocusSession, 'id' | 'status'>) => void;
   endFocusSession: (sessionId: string, quality: 'low' | 'medium' | 'high') => void;
   cancelFocusSession: (sessionId: string) => void;
-  
+
   // Recurring task actions
   createRecurringTaskTemplate: (template: Omit<RecurringTaskTemplate, 'id' | 'createdAt' | 'lastGenerated'>) => void;
   generateTodayRecurringTasks: () => void;
   completeRecurringTask: (taskId: string) => void;
-  
+
   // Planning ritual actions
   createPlanningRitual: (ritual: Omit<PlanningRitual, 'id'>) => void;
   completePlanningRitual: (ritualId: string, date?: string) => void;
@@ -59,29 +58,31 @@ export const useRoutineActions = (): RoutineActions => {
   const createRoutineTemplate = useCallback((template: Omit<RoutineTemplate, 'id' | 'createdAt'>) => {
     const newTemplate: RoutineTemplate = {
       ...template,
-      id: nanoid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString()
     };
-    store.addRoutineTemplate(newTemplate);
+    store.addTemplate(newTemplate);
   }, [store]);
 
   const updateRoutineTemplate = useCallback((id: string, updates: Partial<RoutineTemplate>) => {
-    store.updateRoutineTemplate(id, updates);
+    const existing = store.state.templates[id];
+    if (!existing) return;
+    store.updateTemplate(id, { ...existing, ...updates });
   }, [store]);
 
   const deleteRoutineTemplate = useCallback((id: string) => {
-    store.removeRoutineTemplate(id);
+    store.removeTemplate(id);
   }, [store]);
 
   // Routine instance actions
   const startRoutine = useCallback((templateId: string, date: string = getTodayString()) => {
     const state = store.state;
-    const template = state.routineTemplates[templateId];
+    const template = state.templates[templateId];
     if (!template) return;
 
-    const instanceId = nanoid();
+    const instanceId = crypto.randomUUID();
     const steps: RoutineInstanceStep[] = template.steps.map((step) => ({
-      id: nanoid(),
+      id: crypto.randomUUID(),
       stepId: step.id,
       status: step.defaultCompleted ? 'completed' : 'pending',
       completedAt: step.defaultCompleted ? new Date().toISOString() : undefined,
@@ -103,12 +104,12 @@ export const useRoutineActions = (): RoutineActions => {
       insights: []
     };
 
-    store.addRoutineInstance(instance);
+    store.addInstance(instance);
   }, [store]);
 
   const completeRoutineStep = useCallback((instanceId: string, stepId: string, notes?: string) => {
     const state = store.state;
-    const instance = state.todayRoutines[instanceId];
+    const instance = state.instances[instanceId];
     if (!instance) return;
 
     const updatedSteps = instance.steps.map((step) =>
@@ -129,12 +130,12 @@ export const useRoutineActions = (): RoutineActions => {
       momentum: calculateRoutineMomentum({ ...instance, steps: updatedSteps })
     };
 
-    store.updateRoutineInstance(instanceId, updatedInstance);
+    store.updateInstance(instanceId, updatedInstance);
   }, [store]);
 
   const skipRoutineStep = useCallback((instanceId: string, stepId: string) => {
     const state = store.state;
-    const instance = state.todayRoutines[instanceId];
+    const instance = state.instances[instanceId];
     if (!instance) return;
 
     const updatedSteps = instance.steps.map((step) =>
@@ -147,7 +148,7 @@ export const useRoutineActions = (): RoutineActions => {
         : step
     );
 
-    store.updateRoutineInstance(instanceId, {
+    store.updateInstance(instanceId, {
       ...instance,
       steps: updatedSteps
     });
@@ -155,7 +156,7 @@ export const useRoutineActions = (): RoutineActions => {
 
   const completeRoutine = useCallback((instanceId: string) => {
     const state = store.state;
-    const instance = state.todayRoutines[instanceId];
+    const instance = state.instances[instanceId];
     if (!instance) return;
 
     const completedInstance = {
@@ -164,14 +165,13 @@ export const useRoutineActions = (): RoutineActions => {
       completedAt: new Date().toISOString()
     };
 
-    // Move to history
-    store.addToRoutineHistory(instance.date, completedInstance);
-    store.removeRoutineInstance(instanceId);
+    // Update in place (history not stored separately in this store)
+    store.updateInstance(instanceId, completedInstance);
   }, [store]);
 
   const skipRoutine = useCallback((instanceId: string) => {
     const state = store.state;
-    const instance = state.todayRoutines[instanceId];
+    const instance = state.instances[instanceId];
     if (!instance) return;
 
     const skippedInstance = {
@@ -180,16 +180,15 @@ export const useRoutineActions = (): RoutineActions => {
       completedAt: new Date().toISOString()
     };
 
-    // Move to history
-    store.addToRoutineHistory(instance.date, skippedInstance);
-    store.removeRoutineInstance(instanceId);
+    // Update in place
+    store.updateInstance(instanceId, skippedInstance);
   }, [store]);
 
   // Focus session actions
   const startFocusSession = useCallback((session: Omit<FocusSession, 'id' | 'status'>) => {
     const newSession: FocusSession = {
       ...session,
-      id: nanoid(),
+      id: crypto.randomUUID(),
       status: 'active',
       actualStart: new Date().toISOString(),
       momentum: 0
@@ -211,10 +210,8 @@ export const useRoutineActions = (): RoutineActions => {
       momentum: quality === 'high' ? 8 : quality === 'medium' ? 5 : 3
     };
 
-    // Move to history
-    const today = getTodayString();
-    store.addToFocusHistory(today, completedSession);
-    store.removeFocusSession(sessionId);
+    // Update in place
+    store.updateFocusSession(sessionId, completedSession);
   }, [store]);
 
   const cancelFocusSession = useCallback((sessionId: string) => {
@@ -229,17 +226,15 @@ export const useRoutineActions = (): RoutineActions => {
       momentum: 0
     };
 
-    // Move to history
-    const today = getTodayString();
-    store.addToFocusHistory(today, cancelledSession);
-    store.removeFocusSession(sessionId);
+    // Update in place
+    store.updateFocusSession(sessionId, cancelledSession);
   }, [store]);
 
   // Recurring task actions
   const createRecurringTaskTemplate = useCallback((template: Omit<RecurringTaskTemplate, 'id' | 'createdAt' | 'lastGenerated'>) => {
     const newTemplate: RecurringTaskTemplate = {
       ...template,
-      id: nanoid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       lastGenerated: new Date().toISOString()
     };
@@ -261,8 +256,11 @@ export const useRoutineActions = (): RoutineActions => {
   }, [store]);
 
   const completeRecurringTask = useCallback((taskId: string) => {
+    const task = store.state.recurringTasks[taskId];
+    if (!task) return;
+
     const completedTask = {
-      ...store.state.recurringTasks[taskId],
+      ...task,
       status: 'completed' as RoutineStatus,
       completedAt: new Date().toISOString()
     };
@@ -274,14 +272,17 @@ export const useRoutineActions = (): RoutineActions => {
   const createPlanningRitual = useCallback((ritual: Omit<PlanningRitual, 'id'>) => {
     const newRitual: PlanningRitual = {
       ...ritual,
-      id: nanoid()
+      id: crypto.randomUUID()
     };
 
     store.addPlanningRitual(newRitual);
   }, [store]);
 
   const completePlanningRitual = useCallback((ritualId: string, date: string = getTodayString()) => {
-    store.updatePlanningRitual(ritualId, { lastCompleted: date });
+    const ritual = store.state.planningRituals[ritualId];
+    if (!ritual) return;
+
+    store.updatePlanningRitual(ritualId, { ...ritual, lastCompleted: date });
   }, [store]);
 
   return {
