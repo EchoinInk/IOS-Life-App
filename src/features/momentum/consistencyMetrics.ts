@@ -64,7 +64,7 @@ export class ConsistencyCalculator {
     const consistency: Partial<Record<MomentumCategory, number>> = {};
 
     categories.forEach(category => {
-      const categoryScores = scores.map(s => s.categoryScores[category] || 0);
+      const categoryScores = scores.map(s => s.categoryScores[category] ?? 0);
       
       if (categoryScores.length === 0) {
         consistency[category] = 0;
