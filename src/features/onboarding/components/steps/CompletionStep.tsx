@@ -46,9 +46,8 @@ export const CompletionStep = ({ data, onNext }: OnboardingStepProps) => {
     // Complete onboarding
     completeOnboarding();
     
-    // Identify user with PostHog for better tracking
-    identify('user-' + Date.now(), {
-      name: userName,
+    // Identify user with PostHog using anonymous ID — no PII (real name) sent
+    identify('user-' + crypto.randomUUID(), {
       focus_areas: focusAreas,
       goals: goals,
       modules: modules,

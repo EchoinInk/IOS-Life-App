@@ -300,8 +300,6 @@ export interface ErrorBoundaryTriggeredEvent {
   action: 'boundary_triggered';
   properties: {
     error_message: string;
-    error_stack?: string;
-    component_stack?: string;
     error_name: string;
   };
 }

@@ -45,10 +45,10 @@ export const initializeTracker = (): void => {
     return;
   }
 
-  // Check user preference for analytics
+  // Check user preference for analytics — opt-in only. Default is disabled.
   const analyticsPreference = localStorage.getItem('analytics_consent');
-  if (analyticsPreference === 'false') {
-    console.info('[Analytics] Analytics disabled by user preference.');
+  if (analyticsPreference !== 'true') {
+    console.info('[Analytics] Analytics disabled (no opt-in consent).');
     isEnabled = false;
     return;
   }
