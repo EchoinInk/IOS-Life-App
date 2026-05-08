@@ -23,16 +23,21 @@ class ErrorBoundary extends Component<Props, State> {
       console.error("App rendering error", error, info);
     }
 
-    // Track error in PostHog
+    // Track error in analytics — sanitized to avoid leaking stack traces or PII
     try {
+      const rawMessage = (error.message ?? '').split('\n')[0] ?? '';
+      // Truncate and strip anything that looks like a path/URL or quoted user content
+      const safeMessage = rawMessage
+        .replace(/(https?:\/\/|file:\/\/|\/)\S+/g, '[redacted]')
+        .replace(/["'`][^"'`]{0,200}["'`]/g, '[redacted]')
+        .slice(0, 140);
+
       Tracker.trackEvent({
         category: 'error',
         action: 'boundary_triggered',
         properties: {
-          error_message: error.message,
-          error_stack: error.stack ?? undefined,
-          component_stack: info.componentStack ?? undefined,
           error_name: error.name,
+          error_message: safeMessage,
         },
       });
     } catch (trackingError) {
