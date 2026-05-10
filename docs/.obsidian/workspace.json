@@ -178,6 +178,8 @@
   },
   "active": "60bd7658979b28c5",
   "lastOpenFiles": [
+    "mobile/component-philosophy.md",
+    "mobile/mobile-design-system.md",
     "mobile/implementation-sequence.md",
     "mobile/screen-priority-map.md",
     "architecture/event-system.md",
@@ -206,8 +208,6 @@
     "product",
     "features/tasks.md",
     "features/shopping.md",
-    "features/recipes.md",
-    "features/meals.md",
     "ux",
     "mobile",
     "features",
