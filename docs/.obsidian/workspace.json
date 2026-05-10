@@ -8,13 +8,17 @@
         "type": "tabs",
         "children": [
           {
-            "id": "c32d0edc0276380a",
+            "id": "60bd7658979b28c5",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "mobile/migration-plan.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "migration-plan"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "mobile/migration-plan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for migration-plan"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "mobile/migration-plan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from migration-plan"
             }
           },
           {
@@ -150,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "mobile/migration-plan.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of migration-plan"
             }
           }
         ]
@@ -176,26 +183,36 @@
       "bases:Create new base": false
     }
   },
-  "active": "c32d0edc0276380a",
+  "active": "60bd7658979b28c5",
   "lastOpenFiles": [
+    "roadmap/react-native-step-plan.md",
+    "architecture/shared-core.md",
+    "state-management.md",
+    "rules.md",
+    "routines-integration-summary.md",
+    "roadmap.md",
+    "playbook.md",
+    "folder-structure.md",
+    "features/features.md",
+    "conventions.md",
+    "accessibility.md",
     "Welcome.md",
-    "Current Architecture.md",
     "Tasks.md",
-    "Habits.md",
-    "Dashboard.md",
-    "Calendar.md",
-    "Meals.md",
-    "Product Vision.md",
-    "ADHD UX Principles.md",
-    "Mobile Migration Plan.md",
-    "Feature Map.md",
-    "Recipes.md",
-    "Fitness.md",
-    "Bills.md",
-    "Shopping.md",
-    "Cleaning.md",
-    "Current Problems.md",
+    "TODO.md",
     "Step-by-Step Plan to Turn Lumo Into a React Native App.md",
+    "Shopping.md",
+    "SEEDED_EXPERIENCE_SYSTEM.md",
+    "Recipes.md",
+    "Product Vision.md",
+    "Mobile Migration Plan.md",
+    "Meals.md",
+    "MOTION_SYSTEM.md",
+    "Lumo-Light.png",
+    "Habits.md",
+    "Fitness.md",
+    "Feature Map.md",
+    "Dashboard.md",
+    "Untitled",
     "roadmap",
     "ideas"
   ]
