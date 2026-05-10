@@ -5,6 +5,6 @@ Responsibilities:
 - overdue handling
 
 Related systems:
-- [[Dashboard]]
-- [[Habits]]
-- [[Calendar]]
+- [[dashboard]]
+- [[habits]]
+- [[calendar]]

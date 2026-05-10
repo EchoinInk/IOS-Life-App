@@ -1,7 +1,7 @@
 
-# **Step 1 — Create Safety Branch**
+# ~~**Step 1 — Create Safety Branch**~~
 
-In your current repo:
+~~In your current repo:~~
 
 ```bash
 git checkout -b mobile-migration-foundation
@@ -9,27 +9,27 @@ git checkout -b mobile-migration-foundation
 
 ---
 
-# **Step 2 — Freeze Major Feature Development**
+# ~~**Step 2 — Freeze Major Feature Development**~~
 
-For now:
+~~For now:~~
 
-- stop adding major features
-- stop redesigning screens
-- stop adding experimental systems
+- ~~stop adding major features~~
+- ~~stop redesigning screens~~
+- ~~stop adding experimental systems~~
 
-Focus becomes:
+~~Focus becomes:~~
 
-- architecture cleanup
-- shared logic extraction
-- mobile readiness
+- ~~architecture cleanup~~
+- ~~shared logic extraction~~
+- ~~mobile readiness~~
 
-This is critical.
+~~This is critical.~~
 
 ---
 
 # **PHASE 1 — PREPARE THE ARCHITECTURE**
 
-# **Step 3 — Audit Current Structure**
+# ~~**Step 3 — Audit Current Structure**~~
 
 Your goal is to identify:
 
