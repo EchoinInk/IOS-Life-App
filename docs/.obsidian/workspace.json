@@ -178,6 +178,8 @@
   },
   "active": "60bd7658979b28c5",
   "lastOpenFiles": [
+    "mobile/mvp-feature-contract.md",
+    "mobile/technical-implementation-strategy.md",
     "mobile/component-philosophy.md",
     "mobile/mobile-design-system.md",
     "mobile/implementation-sequence.md",
@@ -206,8 +208,6 @@
     "product/product-vision.md",
     "product/current-problems.md",
     "product",
-    "features/tasks.md",
-    "features/shopping.md",
     "ux",
     "mobile",
     "features",
