@@ -178,6 +178,7 @@
   },
   "active": "60bd7658979b28c5",
   "lastOpenFiles": [
+    "architecture/system-governance-rules.md",
     "architecture/adaptive-system-architecture.md",
     "ux/emotional-design-rules.md",
     "product/core-loops.md",
@@ -207,7 +208,6 @@
     "features/feature-map.md",
     "features/dashboard.md",
     "features/cleaning.md",
-    "features/calendar.md",
     "ux",
     "mobile",
     "features",
