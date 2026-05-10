@@ -11,14 +11,10 @@
             "id": "60bd7658979b28c5",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "mobile/migration-plan.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "migration-plan"
+              "title": "New tab"
             }
           }
         ]
@@ -94,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "mobile/migration-plan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +99,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for migration-plan"
+              "title": "Backlinks"
             }
           },
           {
@@ -113,12 +108,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "mobile/migration-plan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from migration-plan"
+              "title": "Outgoing links"
             }
           },
           {
@@ -156,13 +150,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "mobile/migration-plan.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of migration-plan"
+              "title": "Outline"
             }
           }
         ]
@@ -183,22 +176,23 @@
       "bases:Create new base": false
     }
   },
-  "active": "60bd7658979b28c5",
+  "active": "548d5847ab99116a",
   "lastOpenFiles": [
-    "roadmap/react-native-step-plan.md",
     "architecture/shared-core.md",
-    "state-management.md",
-    "rules.md",
+    "ux/ahdhd-principles.md",
+    "ux",
     "routines-integration-summary.md",
-    "roadmap.md",
-    "playbook.md",
-    "folder-structure.md",
+    "mobile/migration-plan.md",
+    "mobile",
     "features/features.md",
-    "conventions.md",
-    "accessibility.md",
+    "features",
+    "design/design-system.md",
+    "design",
+    "architecture/performance.md",
+    "architecture/current-architecture.md",
+    "architecture",
     "Welcome.md",
     "Tasks.md",
-    "TODO.md",
     "Step-by-Step Plan to Turn Lumo Into a React Native App.md",
     "Shopping.md",
     "SEEDED_EXPERIENCE_SYSTEM.md",
@@ -212,6 +206,13 @@
     "Fitness.md",
     "Feature Map.md",
     "Dashboard.md",
+    "Current Problems.md",
+    "Current Architecture.md",
+    "Cleaning.md",
+    "Calendar.md",
+    "lumo-logo-system.png",
+    "lumo-brand-colour-system.png",
+    "Lumo.png",
     "Untitled",
     "roadmap",
     "ideas"
