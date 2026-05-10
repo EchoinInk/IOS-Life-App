@@ -11,10 +11,14 @@
             "id": "60bd7658979b28c5",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "mobile/mobile-redesign-candidates.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "mobile-redesign-candidates"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "mobile/mobile-redesign-candidates.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for mobile-redesign-candidates"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "mobile/mobile-redesign-candidates.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from mobile-redesign-candidates"
             }
           },
           {
@@ -150,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "mobile/mobile-redesign-candidates.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of mobile-redesign-candidates"
             }
           }
         ]
@@ -176,8 +183,12 @@
       "bases:Create new base": false
     }
   },
-  "active": "548d5847ab99116a",
+  "active": "60bd7658979b28c5",
   "lastOpenFiles": [
+    "architecture/Untitled.md",
+    "mobile/mobile-redesign-candidates.md",
+    "Untitled",
+    "architecture/shared-core.md",
     "roadmap/react-native-step-plan.md",
     "roadmap/playbook.md",
     "roadmap",
@@ -202,13 +213,10 @@
     "architecture/state-management.md",
     "architecture/rules.md",
     "architecture/future-monorepo-structure.md",
-    "architecture/shared-core.md",
     "ux/ahdhd-principles.md",
     "ux",
     "routines-integration-summary.md",
-    "mobile/migration-plan.md",
     "mobile",
-    "features/features.md",
     "features",
     "design",
     "architecture",
@@ -216,7 +224,6 @@
     "lumo-logo-system.png",
     "lumo-brand-colour-system.png",
     "Lumo.png",
-    "Untitled",
     "ideas"
   ]
 }

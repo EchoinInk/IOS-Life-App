@@ -1,6 +1,13 @@
-# Architecture Migration Audit: Shared Core vs Platform-Specific
+# Architecture Migration Audit: Mobile Transition Boundaries
 
-This document identifies what can become a SHARED CORE vs what must be rebuilt as platform-specific UI for React Native/mobile transition.
+This document identifies architectural boundaries for React Native/mobile transition using a 4-category classification system:
+
+1. **Shared Core (KEEP / SHARED)**: Platform-agnostic behavioral systems and logic
+2. **Shared UI Contracts**: Cross-platform UX patterns and interaction conventions  
+3. **Web-Specific (REBUILD)**: Desktop-only UI that must be completely rebuilt
+4. **Needs Mobile Redesign**: Concept survives, but interaction model must adapt for mobile
+
+The true reusable value is in behavioral systems (momentum, intelligence, routines, orchestration), not UI components.
 
 ---
 
@@ -46,38 +53,98 @@ This document identifies what can become a SHARED CORE vs what must be rebuilt a
   - **Contains**: State management, action dispatchers, data selectors
   - **Examples**: `addTask()`, `toggleTask()`, `updateTask()`, `deleteTask()`
 
+## Shared UI Contracts
+
+### Task Interaction Patterns
+- **Task Completion Contract**: Checkbox/toggle interaction with immediate visual feedback
+- **Task Priority States**: Visual hierarchy (high/medium/low) with consistent color coding
+- **Task Category System**: Consistent categorization and metadata display
+- **Form Validation Rules**: Real-time validation with consistent error messaging
+- **Loading States**: Consistent loading indicators for async operations
+- **Empty States**: Consistent empty state messaging and action prompts
+
+### State Conventions
+- **Task State Model**: `{ completed: boolean, priority: string, category: string }`
+- **Form State Pattern**: `{ value: string, error: string | null, touched: boolean }`
+- **Selection State**: Single/multi-select with consistent visual feedback
+- **Modal State**: Consistent open/close/submit/cancel flow
+
 ## Web-Specific (REBUILD)
 
-### UI Components
-- `/src/features/tasks/components/TaskRow.tsx`
-  - **Why web-only**: Direct DOM manipulation, Tailwind classes, web-specific interactions
-  - **Contains**: Checkbox button, hover states, web styling
-  - **Examples**: `onClick` handlers, `className` styling, web layout patterns
+### Desktop Layout Components
+- `/src/features/tasks/components/CalendarStrip.tsx`
+  - **Why web-only**: Desktop calendar interactions, hover states, complex grid layout
+  - **Contains**: Web calendar widget, date navigation, hover interactions
 
-- `/src/features/tasks/components/TaskRowNew.tsx` (inferred)
+- `/src/features/tasks/components/CategoryList.tsx`
+  - **Why web-only**: Desktop sidebar layout, category filtering with hover states
+  - **Contains**: Sidebar navigation, desktop filtering patterns
+
+- `/src/features/tasks/components/FloatingAddButton.tsx`
+  - **Why web-only**: Desktop floating action button with hover effects
+  - **Contains**: Fixed positioning, web hover states, desktop FAB pattern
+
+### Page Layouts
+- `/src/features/tasks/pages/TasksPage.tsx`
+  - **Why web-only**: Desktop page composition, routing integration, web layout
+  - **Contains**: Page structure, desktop layout patterns, web routing
+
+## Needs Mobile Redesign
+
+### Task Display Components
+- `/src/features/tasks/components/TaskRow.tsx`
+  - **Concept survives**: Task item with checkbox, title, metadata display
+  - **Mobile redesign needed**: 
+    - Larger touch targets (44px minimum)
+    - Swipe gestures for completion
+    - Thumb-friendly interaction areas
+    - Mobile-optimized spacing and typography
+
+- `/src/features/tasks/components/TaskRowNew.tsx`
+  - **Concept survives**: Enhanced task item with richer interactions
+  - **Mobile redesign needed**:
+    - Swipe-to-complete functionality
+    - Pull-to-refresh gestures
+    - Mobile-optimized action buttons
+    - Adaptive layout for different screen sizes
+
+### Task Organization
 - `/src/features/tasks/components/TaskSections.tsx`
-  - **Why web-only**: Complex layout logic, web-specific state management (expand/collapse)
-  - **Contains**: Section rendering, expand/collapse state, web styling
-  - **Examples**: `useState` for UI state, Tailwind grid layouts, hover interactions
+  - **Concept survives**: Organized task sections (Today, Upcoming, Completed)
+  - **Mobile redesign needed**:
+    - Collapsible sections with swipe gestures
+    - Mobile-optimized expand/collapse animations
+    - Touch-friendly section headers
+    - Mobile pagination for large lists
 
 - `/src/features/tasks/components/TaskSection.tsx`
-- `/src/features/tasks/components/CalendarStrip.tsx`
-- `/src/features/tasks/components/CategoryList.tsx`
-- `/src/features/tasks/components/FloatingAddButton.tsx`
+  - **Concept survives**: Individual task section with header and items
+  - **Mobile redesign needed**:
+    - Mobile-optimized section headers
+    - Touch-friendly item spacing
+    - Mobile-specific loading states
+
+### Modal Interactions
+- `/src/features/tasks/components/AddTaskModal/` (entire directory)
+- `/src/features/tasks/components/EditTaskModal/` (entire directory)
+  - **Concept survives**: Task creation and editing forms
+  - **Mobile redesign needed**:
+    - Bottom sheet modals instead of centered dialogs
+    - Mobile-optimized form layouts
+    - Touch-friendly input components
+    - Mobile keyboard optimization
+    - Gesture-based dismissal
+
+### Dashboard Components
 - `/src/features/tasks/components/TaskInsights.tsx`
 - `/src/features/tasks/components/TaskProgress.tsx`
 - `/src/features/tasks/components/TasksHeroCard.tsx`
-
-### Modal Components
-- `/src/features/tasks/components/AddTaskModal/` (entire directory)
-- `/src/features/tasks/components/EditTaskModal/` (entire directory)
-  - **Why web-only**: Modal patterns, web form handling, desktop interactions
-  - **Contains**: Form inputs, modal containers, web-specific UX patterns
-
-### Pages
-- `/src/features/tasks/pages/TasksPage.tsx`
-  - **Why web-only**: Page-level layout, routing integration, desktop composition
-  - **Contains**: Page structure, component composition, web layout patterns
+  - **Concept survives**: Task metrics, progress tracking, summary cards
+  - **Mobile redesign needed**:
+    - Mobile-optimized card layouts
+    - Touch-friendly progress indicators
+    - Mobile-specific chart interactions
+    - Adaptive information density
 
 ## Refactor Candidates (MIXED)
 
@@ -94,13 +161,13 @@ This document identifies what can become a SHARED CORE vs what must be rebuilt a
 - `/src/features/tasks/hooks/useAddTaskForm.ts`
 - `/src/features/tasks/hooks/useEditTaskForm.ts`
   - **What's mixed**: Form validation + state management + potential UI logic
-  - **Extract to**: `/src/features/tasks/services/taskFormService.ts`
-  - **Suggested extraction**: 
+- **Extract to**: `/src/features/tasks/services/taskFormService.ts`
+- **Suggested extraction**: 
     - Move validation logic to service
     - Create `validateTaskInput()`, `prepareTaskForSubmission()`
     - Keep only React state in hooks
 
----
+
 
 # Dashboard (Home)
 
@@ -118,12 +185,36 @@ This document identifies what can become a SHARED CORE vs what must be rebuilt a
   - **Contains**: User preference processing, layout calculation, messaging logic
   - **Examples**: `generatePersonalizedDefaults()`, `getPersonalizedDashboardLayout()`, routine integration
 
+## Shared UI Contracts
+
+### Dashboard Interaction Patterns
+- **Focus Area Contract**: Dynamic focus calculation based on user priorities
+- **Quick Actions Contract**: Consistent action buttons with immediate feedback
+- **Personalization Rules**: User preference-driven content adaptation
+- **Cross-Feature Integration**: Consistent data aggregation and display patterns
+
+### State Conventions
+- **Dashboard State Model**: `{ focus: { percentage, label, subtext }, summary: { tasks, meals, budget, shopping } }`
+- **Personalization State**: `{ focusAreas, preferredModules, dailyCadence, planningStyle }`
+- **Quick Action State**: Consistent action dispatching with loading states
+
 ## Web-Specific (REBUILD)
 
-### **CRITICAL FINDING**: No UI components in home feature
+**CRITICAL FINDING**: No UI components in home feature
 - The home feature contains only orchestration hooks
 - All UI components live in `/src/components/` or specific feature pages
 - **Migration impact**: Home UI components need to be identified in shared component directories
+
+## Needs Mobile Redesign
+
+**CRITICAL FINDING**: Dashboard concept survives but needs complete mobile redesign
+- **Concept survives**: Personalized dashboard with focus areas, quick actions, cross-feature summary
+- **Mobile redesign needed**:
+  - Mobile-first dashboard layout
+  - Touch-optimized quick actions
+  - Mobile-specific focus indicators
+  - Adaptive content density
+  - Mobile gesture support (swipe, pull-to-refresh)
 
 ## Refactor Candidates (MIXED)
 
