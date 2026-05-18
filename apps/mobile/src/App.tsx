@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
-import { RootNavigation } from '../navigation/root-navigation';
-import { useTaskStore } from '../state/task-store';
-import { useSessionStore } from '../state/session-store';
+import { RootNavigation } from './navigation/root-navigation';
+import { useTaskStore } from './state/task-store';
+import { useSessionStore } from './state/session-store';
 
 export default function App() {
   const loadTasksFromStorage = useTaskStore((state) => state.loadTasksFromStorage);

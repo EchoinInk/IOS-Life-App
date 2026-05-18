@@ -1,4 +1,4 @@
-import App from './src/app/App';
+import App from './src/App';
 
 export default function ExpoApp() {
   return <App />;
