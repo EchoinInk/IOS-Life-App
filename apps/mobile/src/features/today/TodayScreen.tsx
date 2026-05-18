@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, FlexAlignType } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useTaskStore } from '../../state/task-store';
 import { useUiStore } from '../../state/ui-store';
 import { Screen } from '../../primitives/Screen';
@@ -9,18 +8,24 @@ import { Row } from '../../primitives/Row';
 import { Text } from '../../primitives/Text';
 import { CalmButton } from '../../primitives/behavioral/CalmButton';
 import { EnergyAwareStack } from '../../primitives/behavioral/EnergyAwareStack';
-import { HapticPressable } from '../../primitives/behavioral/HapticPressable';
-import { Surface } from '../../primitives/Surface';
+import { CaptureTrigger } from '../capture/CaptureTrigger';
+import { QuickCaptureFlow } from '../capture/QuickCaptureFlow';
 import { baseTokens } from '../../theme';
 import { EnergyMode } from '../../theme/types';
 import { Task } from '../../state/task-store';
+import { useHapticFeedback } from '../../hooks/useHapticFeedback';
+import { TaskCard } from './TaskCard';
 
 export function TodayScreen() {
   const tasks = useTaskStore((state) => state.tasks);
+  const completeTask = useTaskStore((state) => state.completeTask);
+  const snoozeTask = useTaskStore((state) => state.snoozeTask);
+  const deferTask = useTaskStore((state) => state.deferTask);
+  const reduceScope = useTaskStore((state) => state.reduceScope);
   const lowEnergy = useUiStore((state) => state.lowEnergy);
-  const navigation = useNavigation();
   const [energyMode, setEnergyMode] = useState<EnergyMode>(lowEnergy ? 'low' : 'normal');
   const [showCapture, setShowCapture] = useState(false);
+  const { triggerHaptic } = useHapticFeedback();
 
   const activeTasks = tasks.filter((task) => !task.completed);
   const todayTasks = activeTasks.filter(task => {
@@ -31,11 +36,24 @@ export function TodayScreen() {
   });
 
   const handleCapturePress = () => {
+    triggerHaptic('capture', energyMode);
     setShowCapture(true);
   };
 
   const handleTaskComplete = (task: Task) => {
-    // Will be handled by completion flow
+    completeTask(task.id);
+  };
+
+  const handleTaskSnooze = (task: Task) => {
+    snoozeTask(task.id, 24);
+  };
+
+  const handleTaskDefer = (task: Task) => {
+    deferTask(task.id);
+  };
+
+  const handleTaskReduceScope = (task: Task) => {
+    reduceScope(task.id);
   };
 
   const getEnergyMode = (): EnergyMode => {
@@ -69,7 +87,15 @@ export function TodayScreen() {
         ) : (
           <EnergyAwareStack spacing="md" energyMode={currentEnergyMode}>
             {todayTasks.slice(0, currentEnergyMode === 'overwhelmed' ? 3 : currentEnergyMode === 'low' ? 5 : undefined).map((task) => (
-              <TaskCard key={task.id} task={task} energyMode={currentEnergyMode} onComplete={handleTaskComplete} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                energyMode={currentEnergyMode}
+                onComplete={handleTaskComplete}
+                onSnooze={handleTaskSnooze}
+                onDefer={handleTaskDefer}
+                onReduceScope={handleTaskReduceScope}
+              />
             ))}
           </EnergyAwareStack>
         )}
@@ -81,57 +107,14 @@ export function TodayScreen() {
         )}
       </Stack>
 
-      <CalmButton
-        title="+"
-        onPress={handleCapturePress}
-        size="lg"
+      <CaptureTrigger onPress={handleCapturePress} energyMode={currentEnergyMode} />
+
+      <QuickCaptureFlow
+        visible={showCapture}
+        onClose={() => setShowCapture(false)}
         energyMode={currentEnergyMode}
-        style={styles.fab}
       />
     </Screen>
-  );
-}
-
-interface TaskCardProps {
-  task: Task;
-  energyMode: EnergyMode;
-  onComplete: (task: Task) => void;
-}
-
-function TaskCard({ task, energyMode, onComplete }: TaskCardProps) {
-  const { completeTask } = useTaskStore();
-
-  const handleComplete = () => {
-    completeTask(task.id);
-    onComplete(task);
-  };
-
-  const getPriorityColor = () => {
-    switch (task.priority) {
-      case 'high': return baseTokens.color.error;
-      case 'medium': return baseTokens.color.warning;
-      case 'low': return baseTokens.color.success;
-      default: return baseTokens.color.border.subtle;
-    }
-  };
-
-  return (
-    <HapticPressable onPress={handleComplete} energyMode={energyMode}>
-      <Surface
-        variant={task.priority === 'high' ? 'elevated' : 'card'}
-        shadow={task.priority === 'high' ? 'sm' : 'none'}
-        radius="md"
-        padding="lg"
-        energyMode={energyMode}
-      >
-        <Row spacing="md" align="center">
-          <View style={[styles.checkbox, { borderColor: getPriorityColor() }]} />
-          <Text variant="body" style={styles.taskTitle}>
-            {task.title}
-          </Text>
-        </Row>
-      </Surface>
-    </HapticPressable>
   );
 }
 
