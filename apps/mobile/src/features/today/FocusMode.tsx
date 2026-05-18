@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Screen } from '../../primitives/Screen';
 import { Stack } from '../../primitives/Stack';
 import { Row } from '../../primitives/Row';
@@ -31,9 +31,6 @@ export function FocusMode({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const { triggerHaptic } = useHapticFeedback();
-  
-  const fadeAnim = useRef(new Animated.Value(visible ? 1 : 0)).current;
-  const scaleAnim = useRef(new Animated.Value(visible ? 1 : 0.95)).current;
 
   const activeTasks = tasks.filter((task) => !task.completed && task.status === 'today');
   const currentTask = activeTasks[currentIndex];
@@ -41,31 +38,6 @@ export function FocusMode({
   useEffect(() => {
     if (visible) {
       triggerHaptic('focus', energyMode);
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: energyMode === 'overwhelmed' ? 0 : 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: energyMode === 'overwhelmed' ? 0 : 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else if (isExiting) {
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 0.95,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
     }
   }, [visible, energyMode]);
 
@@ -126,13 +98,8 @@ export function FocusMode({
     return null;
   }
 
-  const animatedStyle = {
-    opacity: fadeAnim,
-    transform: [{ scale: scaleAnim }],
-  };
-
   return (
-    <Animated.View style={[styles.overlay, animatedStyle]}>
+    <View style={styles.overlay}>
       <Screen energyMode={energyMode} style={styles.screen}>
         <Stack spacing="xl" padding="lg" style={styles.content}>
           {/* Header with progress indicator */}
@@ -220,7 +187,7 @@ export function FocusMode({
           </Stack>
         </Stack>
       </Screen>
-    </Animated.View>
+    </View>
   );
 }
 
