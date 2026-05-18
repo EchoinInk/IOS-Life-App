@@ -82,14 +82,14 @@ export function RecoveryFlow({ energyMode = 'normal', onStartSmall, onReduceFocu
               <CalmButton
                 title="Show 3"
                 onPress={onReduceFocus}
-                variant="outline"
+                variant="gentle"
                 size="sm"
                 energyMode={energyMode}
               />
               <CalmButton
                 title="Show 5"
                 onPress={onReduceFocus}
-                variant="outline"
+                variant="gentle"
                 size="sm"
                 energyMode={energyMode}
               />

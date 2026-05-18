@@ -81,7 +81,7 @@ export function BacklogView({ energyMode = 'normal', onTaskSelect, maxTasks }: B
                   </Text>
                   <Row spacing="sm">
                     {isOverdue(task) && (
-                      <Text variant="caption" color="error">
+                      <Text variant="caption" color="primary">
                         Overdue
                       </Text>
                     )}
