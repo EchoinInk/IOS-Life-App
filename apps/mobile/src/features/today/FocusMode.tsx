@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import { Screen } from '../../primitives/Screen';
 import { Stack } from '../../primitives/Stack';
 import { Row } from '../../primitives/Row';
@@ -31,6 +31,10 @@ export function FocusMode({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const { triggerHaptic } = useHapticFeedback();
+  
+  const fadeAnim = useRef(new Animated.Value(visible ? 1 : 0)).current;
+  const scaleAnim = useRef(new Animated.Value(visible ? 1 : 0.95)).current;
+  const taskFadeAnim = useRef(new Animated.Value(visible ? 1 : 0)).current;
 
   const activeTasks = tasks.filter((task) => !task.completed && task.status === 'today');
   const currentTask = activeTasks[currentIndex];
@@ -38,8 +42,48 @@ export function FocusMode({
   useEffect(() => {
     if (visible) {
       triggerHaptic('focus', energyMode);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: energyMode === 'overwhelmed' ? 0 : 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: energyMode === 'overwhelmed' ? 0 : 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(taskFadeAnim, {
+          toValue: 1,
+          duration: energyMode === 'overwhelmed' ? 0 : 350,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else if (isExiting) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.95,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
     }
-  }, [visible, energyMode]);
+  }, [visible, energyMode, isExiting]);
+
+  useEffect(() => {
+    // Animate task content when switching tasks
+    taskFadeAnim.setValue(0);
+    Animated.timing(taskFadeAnim, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [currentIndex]);
 
   const handleComplete = () => {
     if (currentTask) {
@@ -98,8 +142,17 @@ export function FocusMode({
     return null;
   }
 
+  const animatedStyle = {
+    opacity: fadeAnim,
+    transform: [{ scale: scaleAnim }],
+  };
+
+  const taskAnimatedStyle = {
+    opacity: taskFadeAnim,
+  };
+
   return (
-    <View style={styles.overlay}>
+    <Animated.View style={[styles.overlay, animatedStyle]}>
       <Screen energyMode={energyMode} style={styles.screen}>
         <Stack spacing="xl" padding="lg" style={styles.content}>
           {/* Header with progress indicator */}
@@ -116,33 +169,35 @@ export function FocusMode({
           </Row>
 
           {/* Task display */}
-          <Stack spacing="lg" style={styles.taskContainer}>
-            <Surface
-              variant="elevated"
-              shadow="md"
-              radius="lg"
-              padding="xl"
-              energyMode={energyMode}
-              style={styles.taskSurface}
-            >
-              <Text variant="heading" style={styles.taskTitle}>
-                {currentTask.title}
-              </Text>
-              
-              {currentTask.priority && (
-                <Text variant="caption" color="secondary" style={styles.priorityLabel}>
-                  Priority: {currentTask.priority}
+          <Animated.View style={taskAnimatedStyle}>
+            <Stack spacing="lg" style={styles.taskContainer}>
+              <Surface
+                variant="elevated"
+                shadow="md"
+                radius="lg"
+                padding="xl"
+                energyMode={energyMode}
+                style={styles.taskSurface}
+              >
+                <Text variant="heading" style={styles.taskTitle}>
+                  {currentTask.title}
+                </Text>
+                
+                {currentTask.priority && (
+                  <Text variant="caption" color="secondary" style={styles.priorityLabel}>
+                    Priority: {currentTask.priority}
+                  </Text>
+                )}
+              </Surface>
+
+              {/* Calm focus prompt */}
+              {energyMode !== 'overwhelmed' && (
+                <Text variant="body" color="secondary" style={styles.prompt}>
+                  Take your time. There's no rush.
                 </Text>
               )}
-            </Surface>
-
-            {/* Calm focus prompt */}
-            {energyMode !== 'overwhelmed' && (
-              <Text variant="body" color="secondary" style={styles.prompt}>
-                Take your time. There's no rush.
-              </Text>
-            )}
-          </Stack>
+            </Stack>
+          </Animated.View>
 
           {/* Action buttons */}
           <Stack spacing="md" style={styles.actions}>
@@ -187,7 +242,7 @@ export function FocusMode({
           </Stack>
         </Stack>
       </Screen>
-    </View>
+    </Animated.View>
   );
 }
 

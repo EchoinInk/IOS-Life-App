@@ -33,7 +33,10 @@ export function TodayScreen() {
 
   useEffect(() => {
     // Load tasks on mount
-    useTaskStore.getState().loadTasksFromStorage();
+    useTaskStore.getState().loadTasksFromStorage().then(() => {
+      // Seed demo data if empty
+      useTaskStore.getState().seedDemoData();
+    });
   }, []);
 
   const activeTasks = tasks.filter((task) => !task.completed);
@@ -85,12 +88,12 @@ export function TodayScreen() {
 
   return (
     <Screen energyMode={currentEnergyMode}>
-      <Stack spacing="lg" padding="lg">
+      <Stack spacing="xl" padding="xl" style={styles.container}>
         {currentEnergyMode !== 'overwhelmed' && (
-          <Row justify="space-between" align="center">
+          <Row justify="space-between" align="center" style={styles.header}>
             <Text variant="heading">Today</Text>
             <Row spacing="sm">
-              {todayTasks.length > 0 && (
+              {todayTasks.length > 1 && (
                 <CalmButton
                   title="Focus"
                   onPress={handleFocusModePress}
@@ -107,16 +110,16 @@ export function TodayScreen() {
         )}
 
         {todayTasks.length === 0 ? (
-          <Stack spacing="md" align="center" style={styles.emptyContainer}>
-            <Text variant="body" color="secondary">
-              No tasks for today
+          <Stack spacing="lg" align="center" style={styles.emptyContainer}>
+            <Text variant="body" color="secondary" style={styles.emptyTitle}>
+              Space for what matters
             </Text>
-            <Text variant="caption" color="tertiary">
-              Capture something to get started
+            <Text variant="caption" color="tertiary" style={styles.emptySubtitle}>
+              Capture something small to begin
             </Text>
           </Stack>
         ) : (
-          <EnergyAwareStack spacing="md" energyMode={currentEnergyMode}>
+          <Stack spacing="md">
             {todayTasks.slice(0, currentEnergyMode === 'overwhelmed' ? 3 : currentEnergyMode === 'low' ? 5 : undefined).map((task) => (
               <TaskCard
                 key={task.id}
@@ -128,7 +131,7 @@ export function TodayScreen() {
                 onReduceScope={handleTaskReduceScope}
               />
             ))}
-          </EnergyAwareStack>
+          </Stack>
         )}
 
         {currentEnergyMode !== 'overwhelmed' && todayTasks.length > (currentEnergyMode === 'low' ? 5 : todayTasks.length) && (
@@ -159,31 +162,26 @@ export function TodayScreen() {
 }
 
 const styles = {
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingBottom: baseTokens.spacing.sm,
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center' as const,
     alignItems: 'center' as FlexAlignType,
-    padding: baseTokens.spacing.xxl,
+    paddingVertical: baseTokens.spacing.xxl * 2,
+  },
+  emptyTitle: {
+    textAlign: 'center' as const,
+    marginBottom: baseTokens.spacing.sm,
+  },
+  emptySubtitle: {
+    textAlign: 'center' as const,
   },
   remainingText: {
     textAlign: 'center' as const,
-  },
-  fab: {
-    position: 'absolute' as const,
-    bottom: baseTokens.spacing.xxl,
-    right: baseTokens.spacing.xxl,
-    width: baseTokens.touchTarget.generous,
-    height: baseTokens.touchTarget.generous,
-    borderRadius: baseTokens.touchTarget.generous / 2,
-    paddingHorizontal: 0,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: baseTokens.radii.sm,
-    borderWidth: 2,
-  },
-  taskTitle: {
-    flex: 1,
   },
 };

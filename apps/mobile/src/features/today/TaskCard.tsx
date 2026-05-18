@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Task } from '../../state/task-store';
 import { Surface } from '../../primitives/Surface';
 import { Row } from '../../primitives/Row';
@@ -19,10 +19,23 @@ interface TaskCardProps {
 
 export function TaskCard({ task, energyMode, onComplete, onSnooze, onDefer, onReduceScope }: TaskCardProps) {
   const { triggerHaptic } = useHapticFeedback();
+  const [scaleAnim] = useState(new Animated.Value(1));
 
   const handleComplete = () => {
     triggerHaptic('completion');
-    onComplete(task);
+    Animated.timing(scaleAnim, {
+      toValue: 0.95,
+      duration: 100,
+      useNativeDriver: true,
+    }).start(() => {
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }).start(() => {
+        onComplete(task);
+      });
+    });
   };
 
   const handleSnooze = () => {
@@ -49,38 +62,63 @@ export function TaskCard({ task, energyMode, onComplete, onSnooze, onDefer, onRe
     }
   };
 
+  const getPriorityDotColor = () => {
+    switch (task.priority) {
+      case 'high': return baseTokens.color.error;
+      case 'medium': return baseTokens.color.warning;
+      case 'low': return baseTokens.color.success;
+      default: return baseTokens.color.border.subtle;
+    }
+  };
+
   return (
-    <TouchableOpacity
-      onPress={handleComplete}
-      onLongPress={handleDefer}
-      activeOpacity={energyMode === 'overwhelmed' ? 1 : 0.7}
-    >
-      <Surface
-        variant={task.priority === 'high' ? 'elevated' : 'card'}
-        shadow={task.priority === 'high' ? 'sm' : 'none'}
-        radius="md"
-        padding="lg"
-        energyMode={energyMode}
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <TouchableOpacity
+        onPress={handleComplete}
+        onLongPress={handleDefer}
+        activeOpacity={energyMode === 'overwhelmed' ? 1 : 0.9}
       >
-        <Row spacing="md" align="center">
-          <View style={[styles.checkbox, { borderColor: getPriorityColor() }]} />
-          <Text variant="body" style={styles.taskTitle}>
-            {task.title}
-          </Text>
-        </Row>
-      </Surface>
-    </TouchableOpacity>
+        <Surface
+          variant={task.priority === 'high' ? 'elevated' : 'card'}
+          shadow={task.priority === 'high' ? 'sm' : 'none'}
+          radius="lg"
+          padding="xl"
+          energyMode={energyMode}
+          style={styles.surface}
+        >
+          <Row spacing="lg" align="center">
+            <View style={[styles.checkbox, { borderColor: getPriorityColor() }]}>
+              <View style={[styles.priorityDot, { backgroundColor: getPriorityDotColor() }]} />
+            </View>
+            <Text variant="body" style={styles.taskTitle}>
+              {task.title}
+            </Text>
+          </Row>
+        </Surface>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
+  surface: {
+    minHeight: baseTokens.touchTarget.comfortable,
+  },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: baseTokens.radii.sm,
+    width: 28,
+    height: 28,
+    borderRadius: baseTokens.radii.md,
     borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  priorityDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
   taskTitle: {
     flex: 1,
+    lineHeight: baseTokens.typography.body.lineHeight,
   },
 });

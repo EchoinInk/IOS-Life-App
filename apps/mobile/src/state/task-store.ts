@@ -33,6 +33,7 @@ interface TaskStore {
   loadTasksFromStorage: () => Promise<void>;
   persistTasks: () => Promise<void>;
   recoverInterruptedState: () => void;
+  seedDemoData: () => void;
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -149,5 +150,78 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         return task;
       }),
     }));
+  },
+  seedDemoData: () => {
+    const { tasks } = get();
+    if (tasks.length === 0) {
+      const now = Date.now();
+      const yesterday = now - (24 * 60 * 60 * 1000);
+      const tomorrow = now + (24 * 60 * 60 * 1000);
+      
+      const demoTasks: Task[] = [
+        {
+          id: '1',
+          title: 'Reply to Sarah\'s email',
+          completed: false,
+          createdAt: yesterday,
+          dueDate: yesterday,
+          priority: 'high',
+          status: 'today',
+        },
+        {
+          id: '2',
+          title: 'Take a 10-minute walk',
+          completed: false,
+          createdAt: now,
+          priority: 'low',
+          status: 'today',
+        },
+        {
+          id: '3',
+          title: 'Review project proposal',
+          completed: false,
+          createdAt: now,
+          dueDate: tomorrow,
+          priority: 'medium',
+          status: 'today',
+        },
+        {
+          id: '4',
+          title: 'Water the plants',
+          completed: false,
+          createdAt: now,
+          priority: 'low',
+          status: 'today',
+        },
+        {
+          id: '5',
+          title: 'Schedule dentist appointment',
+          completed: false,
+          createdAt: now,
+          dueDate: tomorrow,
+          priority: 'medium',
+          status: 'today',
+        },
+        {
+          id: '6',
+          title: 'Sort through mail',
+          completed: false,
+          createdAt: now,
+          priority: 'low',
+          status: 'today',
+        },
+        {
+          id: '7',
+          title: 'Call mom',
+          completed: false,
+          createdAt: now,
+          priority: 'medium',
+          status: 'today',
+        },
+      ];
+      
+      set({ tasks: demoTasks });
+      get().persistTasks();
+    }
   },
 }));
