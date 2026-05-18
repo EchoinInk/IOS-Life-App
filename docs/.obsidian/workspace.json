@@ -182,6 +182,7 @@
   },
   "active": "60bd7658979b28c5",
   "lastOpenFiles": [
+    "architecture/mobile-behavioral-architecture.md",
     "mobile/mvp-feature-contract.md",
     "mobile/technical-implementation-strategy.md",
     "mobile/component-philosophy.md",
@@ -210,7 +211,6 @@
     "refactors",
     "product/roadmap.md",
     "product/product-vision.md",
-    "product/current-problems.md",
     "product",
     "ux",
     "mobile",
